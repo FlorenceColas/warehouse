@@ -1,0 +1,17 @@
+<p>Please login:</p>
+
+<?php
+$form = $this->loginForm;
+$form->prepare();
+
+echo $this->form()->openTag($form);
+echo '<div>'.$this->formRow($form->get('logonName')).'</div>';
+echo '<div>'.$this->formRow($form->get('password')).'</div>';
+echo '<div>'.$this->formRow($form->get('login')) .' ' ;
+echo $this->formRow($form->get('loginRequest')).'</div>';
+echo '<div><label id="message">'.$this->message.'</label></div>';
+
+echo $this->form()->closeTag();
+
+
+?>

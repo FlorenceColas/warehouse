@@ -1,0 +1,50 @@
+<br>
+<?php if ($this->access == \Warehouse\Enum\EnumUserAccess::UER_ACCESS_VISITOR) { ?>
+    <h1>Welcome <?php echo $this->name; ?></h1>
+
+    <p>This portal is made with <b>PHP7</b> and uses <b>Zend Framework 2</b>. </p>
+    <p>I have realised this project
+        to improve my skills about this technology. By this way I can give you an overview of my work.</p>
+    <p>This portal uses:</p>
+    <ul>
+        <li><b>Zend\Authentication</b> for authentication and session storage</li>
+        <li><b>Doctrine</b> for data persistence and <b>Doctrine\ORM</b> annotations for database schema generation</li>
+        <li><b>Zend\Mail</b> and <b>Zend\ServiceManager</b> for mail service</li>
+        <li>Form filters and validators using different methods: <b>@Annotation</b> or <b>Zend\Form</b> & <b>Zend\InputFilter</b></li>
+    </ul>
+
+    <br>
+    <p>Your login gives you access to:</p>
+    <ul>
+        <li><b>Job Opening</b>: contains a resume of my application on your job offer. It contains additional technical information about my web developer experience. You can generate and download a pdf of these information.</li>
+        <li><b>Contact</b>: contains a form you can use to communicate with me. The content is persist in the database using Doctrine.</li>
+    </ul>
+
+<?php } elseif ($this->access == \Warehouse\Enum\EnumUserAccess::UER_ACCESS_USER) { ?>
+    <h1>Welcome <?php echo $this->name; ?></h1>
+    <p>Enjoy your time on the portal !</p>
+    <br>
+    <a href="/warehouse/success/changepassword/id/<?php echo $this->id ?>">Change my password</a><br>
+    <?php
+    if (isset($this->flashmessages)) {
+        echo '</span>';
+        echo '<span class="custom_form_info">';
+        foreach($this->flashmessages as $message) {
+            echo $message;
+        }
+    }
+?>
+<?php } elseif ($this->access == \Warehouse\Enum\EnumUserAccess::UER_ACCESS_ADMIN) { ?>
+
+    <h1>Hi Boss !</h1>
+    <a href="/warehouse/success/changepassword/id/<?php echo $this->id ?>">Change my password</a><br>
+<?php
+
+    if (isset($this->flashmessages)) {
+        echo '</span>';
+        echo '<span class="custom_form_info">';
+        foreach($this->flashmessages as $message) {
+            echo $message;
+        }
+    }
+} ?>

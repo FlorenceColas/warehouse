@@ -1,0 +1,368 @@
+<?php echo $this->headScript()->prependFile($this->basePath('js/jquery-ui-1.12.1/jquery-ui.js')); ?>
+<?php  echo $this->headLink()->prependStylesheet($this->basePath('js/jquery-ui-themes-1.12.1/themes/black-tie/jquery-ui.css')); ?>
+
+<script type="text/javascript">
+    $(function(ready){
+        $("#showform").click(function(){
+            $.ajax({
+                url: '/warehouse/recipeattachment/openupload/id/<?php echo $recipe->getId();?>',
+                type:       'POST',
+                dataType:   'json',
+                data:       'defaultphoto=1',
+                async:      false,
+                success: function(data){
+                    $("#winpopup").html(data.contentpage);
+                }
+            });
+            //create an instance of dialog box, without opening it
+            $("#winpopup").dialog({
+                draggable:true,
+                autoOpen: false,
+                height:250,
+                width:400,
+                modal: true,
+                resizable: false,
+                title:'Upload a file'
+            });
+            //open the dialog box
+            $("#winpopup").dialog('open');
+            return false;
+        });
+
+        $("#newattachment").click(function(){
+            $.ajax({
+                url: '/warehouse/recipeattachment/openupload/id/<?php echo $recipe->getId();?>',
+                type:       'POST',
+                dataType:   'json',
+                data:       {'defaultphoto' : 0},
+                async:      false,
+                success: function(data){
+                    $("#winpopup").html(data.contentpage);
+                }
+            });
+            //create an instance of dialog box, without opening it
+            $("#winpopup").dialog({
+                draggable:true,
+                autoOpen: false,
+                height:300,
+                width:400,
+                modal: true,
+                resizable: false,
+                title:'Upload a file'
+            });
+            //open the dialog box
+            $("#winpopup").dialog('open');
+            return false;
+        });
+    });
+
+    function RenameAttachment(id){
+        event.preventDefault();
+        $.ajax({
+            url: '/warehouse/recipeattachment/renamefile/id/'+id,
+            type:       'POST',
+            dataType:   'json',
+            async:      false,
+            success: function(data){
+                $("#winpopup").html(data.contentpage);
+            }
+        });
+        //create an instance of dialog box, without opening it
+        $("#winpopup").dialog({
+            draggable:true,
+            autoOpen: false,
+            height:250,
+            width:600,
+            modal: true,
+            resizable: false,
+            title:'Change the file description'
+        });
+        //open the dialog box
+        $("#winpopup").dialog('open');
+        return false;
+    }
+
+    function DeleteAttachment(id,defaultphoto) {
+        //   event.preventDefault();
+        if (defaultphoto == 1) msg = "Are you sure you want to delete the attachment because it is the current recipe photo?";
+        else msg = "Are you sure you want to delete the attachment?";
+        if (confirm(msg)){
+            $.ajax({
+                url: '/warehouse/recipeattachment/delete/id/'+id,
+                type:       'POST',
+                dataType:   'json',
+                async:      false,
+                success: function(data, status){
+                    //      alert(data.msg);
+                    $("#infoattachment").html(data.msg);
+                },
+                error: function(xhr, status, errorThrown){
+                    if (xhr.status === 0) {
+                        alert('Not connected. Verify Network.');
+                    } else if (xhr.status == 404) {
+                        alert('Requested page not found. [404]');
+                    } else if (xhr.status == 500) {
+                        alert('Server Error [500].');
+                    } else if (errorThrown === 'parsererror') {
+                        alert('Requested JSON parse failed.');
+                    } else if (errorThrown === 'timeout') {
+                        alert('Time out error.');
+                    } else if (errorThrown === 'abort') {
+                        alert('Ajax request aborted.');
+                    } else {
+                        alert('Remote sever unavailable. Please try later');
+                    }
+                },
+                complete: function(xhr, textStatus) {
+                }
+            });
+        }
+    }
+
+    function ChooseDefaultPhoto(id){
+        $.ajax({
+            url: '/warehouse/recipeattachment/changedefaultphoto/id/'+id,
+            type:       'POST',
+            async:      false,
+            success: function(data, status){
+
+            },
+            error: function(xhr, status, errorThrown){
+                if (xhr.status === 0) {
+                    alert('Not connected. Verify Network.');
+                } else if (xhr.status == 404) {
+                    alert('Requested page not found. [404]');
+                } else if (xhr.status == 500) {
+                    alert('Server Error [500].');
+                } else if (errorThrown === 'parsererror') {
+                    alert('Requested JSON parse failed.');
+                } else if (errorThrown === 'timeout') {
+                    alert('Time out error.');
+                } else if (errorThrown === 'abort') {
+                    alert('Ajax request aborted.');
+                } else {
+                    alert('Remote sever unavailable. Please try later');
+                }
+            },
+            complete: function(xhr, textStatus) {
+            }
+        });
+    }
+
+    function exportpdf(id){
+        event.preventDefault();
+        $.ajax({
+            url: '/warehouse/recipe/generatepdf/id/'+id,
+            type:       'POST',
+            //dataType:   'json',
+            async:      false,
+            success: function(data, status){
+                $("#file").html(data.file+' '+data.msg);
+            },
+            error: function(xhr, status, errorThrown){
+                if (xhr.status === 0) {
+                    alert('Not connected. Verify Network.');
+                } else if (xhr.status == 404) {
+                    alert('Requested page not found. [404]');
+                } else if (xhr.status == 500) {
+                    alert('Server Error [500].');
+                } else if (errorThrown === 'parsererror') {
+                    alert('Requested JSON parse failed.');
+                } else if (errorThrown === 'timeout') {
+                    alert('Time out error.');
+                } else if (errorThrown === 'abort') {
+                    alert('Ajax request aborted.');
+                } else {
+                    alert('Remote sever unavailable. Please try later');
+                }
+            },
+            complete: function(xhr, textStatus) {
+           //            alert(textStatus);
+            }
+        });
+    }
+
+    function OpenRLink(l){
+        window.open(l);
+    }
+</script>
+<table>
+    <tr>
+        <td>
+            <h1><?php echo $recipe->getDescription() ?></h1>
+            <?php
+            echo '<div><p><i>Serves:</i> '.$recipe->getServes().' - ';
+                    echo '<i>Preparation time:</i> ';
+
+                    if ($recipe->getPreparationTime()->format('H') != 00)
+                    echo $recipe->getPreparationTime()->format('H').'h ';
+                    if ($recipe->getPreparationTime()->format('i') != 0)
+                    echo $recipe->getPreparationTime()->format('i').'min ';
+
+                    echo ' - ';
+                    echo '<i>Total time:</i> ';
+
+                    if ($recipe->getTotalTime()->format('H') != 00)
+                    echo $recipe->getTotalTime()->format('H').'h';
+                    if ($recipe->getTotalTime()->format('i') != 0)
+                    echo $recipe->getTotalTime()->format('i').'min';
+
+                    echo ' - <i>Category</i>: '.$recipe->getCategory()->getDescription();
+                    echo '</p></div>';
+            ?>
+        </td>
+        <td style="padding: 0px 0px 0px 50px;">
+        </td>
+        <td style="padding: 0px 0px 0px 0px;">
+            <?php
+            $photoAttachment= $this->defaultphoto;
+            if (isset($photoAttachment)) {
+                echo '<a id="showform" href=""><img style="max-height: 120px; width: auto;" src="../../../../'.$photoAttachment->getPath().'thumb/'.$photoAttachment->getFileName().'" id="defaultphoto" alt="'.$recipe->getDescription().'"/></a>';
+            } else {
+                echo '<a id="showform" href=""><img style="max-height: 120px; width: auto;" src="../../../../img/takephoto.png" id="defaultphoto" alt="The photo does not exist"/></a>';
+            }
+            ?>
+        </td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <td>
+            <input name="exportpdf" type="button" onclick="exportpdf(<?php echo($recipe->getId()); ?>);" id="exportpdf" value="Export PDF">
+        </td>
+        <td>
+            <div name="file" id="file"></div>
+        </td>
+    </tr>
+</table>
+
+<?php
+//    $recipeForm->setAttribute('action', $this->url('post', array('action'=>'add')));
+
+
+
+echo '<h4>Notes/Suggestions:</h4>';
+echo $recipe->getNote();
+
+
+echo '<h4>Ingredients  ';
+echo '<a title="Add the \'Not on stock\' ingredients to the shopping list" class="shoppinglist" href="/warehouse/recipe/shoppinglist/id/'.$recipe->getId().'?from=recipe"><img style="max-height: 18px; width: auto;" src="../../../../img/caddie.png" id="buy" alt=""/></a>';
+echo '  <a title="Add the \'Out to stock\' list" class="stockinterface" href="/warehouse/recipe/stockinterface/id/'.$recipe->getId().'?from=recipe"><img style="max-height: 18px; width: auto;" src="../../../../img/toque2.jpg" id="out" alt=""/></a>';
+echo '</h4>';
+
+echo '<ul>';
+foreach($recipe->getIngredients() as $ingredient) {
+    echo '<li>';
+    if ($ingredient->getQuantity() == round($ingredient->getQuantity(),0)){
+        $quantity = round($ingredient->getQuantity(),0);
+    }
+    else {
+        $quantity = $ingredient->getQuantity();
+    }
+    echo $quantity.' '.$ingredient->getUnit()->getUnit().' '. $ingredient->getStockmergement()->getDescription();
+    if ($ingredient->getDescription() !== "") echo ' - '.$ingredient->getDescription();
+
+//    echo $ingredient->getAvailability();
+    switch ($ingredient->getAvailability()){
+        case \Warehouse\Enum\EnumAvailability::OnStock:
+            echo ('<font color="green">   => On Stock</font>');
+            break;
+        case \Warehouse\Enum\EnumAvailability::NotOnStock:
+            echo ('<font color="red"><b>   => Not On Stock</b></font>');
+            break;
+        case \Warehouse\Enum\EnumAvailability::OnStockRequireManualCheck:
+            echo ('<font color="green">   => On Stock - </font><font color="orange">Require manual check for exact quantity</font>');
+            break;
+    }
+
+    echo '</li>';
+}
+echo '</ul>';
+
+echo '<h4>Instructions</h4>';
+echo '<ol>';
+foreach($recipe->getInstructions() as $instruction) {
+    echo '<li>';
+    echo $instruction->getDescription();
+    echo '</li>';
+}
+echo '</ol>';
+
+echo '<hr>';
+
+echo '<h4>Attachments</h4>';
+echo '<button id="newattachment">New</button>';
+if (count($recipe->getRecipeAttachment())==0) {
+    echo '<p><i>none</i></p>';
+} else {
+    echo '<table border="1" border-style="solid" border-color="black" width="65%" cellspacing=4 cellpadding=4>';
+    echo '<tr>';
+    echo '<th>Description</th>';
+    echo '<th>File Name</th>';
+    echo '<th>Size</th>';
+    echo '<th>Mime</th>';
+    echo '<th>Default Photo</th>';
+    echo '<th></th>';
+    echo '<th></th>';
+    echo '<th></th>';
+    echo '</tr>';
+    foreach ($recipe->getRecipeAttachment() as $attachment) {
+        echo '<tr>';
+        $date = date_format(new \DateTime('now'), "Y/m/d");
+        if (date_format($attachment->getCreationDate(), "Y/m/d") >= $date) {
+            echo '<td>' . $attachment->getDescription() . '<img style="max-height: 18px; width: auto;" src="../../../../img/new.png" id="new" alt="New attachment"/></td>';
+        } else {
+            echo '<td>' . $attachment->getDescription() . '</td>';
+        }
+        echo '<td>' . $attachment->getFileName() . '</td>';
+        if ($attachment->getSize() >= 1000000) {
+            $size = round($attachment->getSize() / 1000000, 2) . ' MB';
+        } else {
+            $size = round($attachment->getSize() / 1000, 2) . ' KB';
+        }
+        echo '<td>' . $size . '</td>';
+        echo '<td>' . $attachment->getMime() . '</td>';
+        if ($attachment->getDefaultPhoto() == '1') {
+            echo '<td align="center"><img style="max-height: 18px; width: auto;" src="../../../../img/checkmark.png" id="isdefaultphoto" alt=""/></td>';
+        } else {
+            if ($attachment->getMime() == 'image/png' or $attachment->getMime() == 'image/bmp' or $attachment->getMime() == 'image/jpeg' or $attachment->getMime() == 'image/gif' or $attachment->getMime() == 'image/tiff'){
+                echo '<td align="center"><a id="choosedefaultphoto" onclick="ChooseDefaultPhoto('.$attachment->getId().');" href=""><img style="max-height: 18px; width: auto;" src="../../../../img/choose2.png" id="choosedefaultphoto" alt=""/></a></td>';
+            } else {
+                echo '<td></td>';
+            }
+        }
+        echo '<td align="center"><a class="filePreview" href="/warehouse/recipeattachment/open/id/' . $attachment->getId() . '" target="_blank"><img style="max-height: 18px; width: auto;" src="../../../../img/view.ico" id="view" alt=""/></a></td> ';
+        echo '<td align="center"><a id="fileDelete" onclick="DeleteAttachment('.$attachment->getId().','.$attachment->getDefaultPhoto().');" href=""><img style="max-height: 18px; width: auto;" src="../../../../img/trash.png" id="delete" alt=""/></a> </td>';
+        echo '<td align="center"><a id="fileRename" onclick="RenameAttachment('.$attachment->getId().');" href=""><img style="max-height: 18px; width: auto;" src="../../../../img/edit.jpeg" id="edit" alt=""/></a></td>';
+        echo '</tr>';
+    }
+    echo '</table>';
+}
+echo '<div id="infoattachment"></div>';
+echo '<hr>';
+
+$form = $this->form;
+$form->prepare();
+
+echo $this->form()->openTag($form);
+echo $this->formInput($form->get('backToList'));
+echo ' '.$this->formInput($form->get('update'));
+echo ' '.$this->formInput($form->get('check'));
+echo ' '.$this->formInput($form->get('delete'));
+echo ' '.$this->formInput($form->get('add'));
+echo $this->form()->closeTag();
+
+?>
+
+
+<!-- empty div to save dialog temporary -->
+<div id="winpopup">
+    <?php
+    if ($this->get('messages') != null) {
+        foreach ($this->get('messages') as $inputName => $messageInputs) {
+            echo '  <span id="error-form-message">' . $messageInputs . '</span>';
+        }
+    }
+    ?>
+</div>

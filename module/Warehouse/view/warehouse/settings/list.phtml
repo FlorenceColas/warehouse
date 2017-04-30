@@ -1,0 +1,266 @@
+<div class="listsettingsdata">
+    <h1>Settings</h1>
+    <?php
+    $form = $this->settingsForm;
+    $form->prepare();
+        echo '<p><a href="/warehouse/settings/list?table=Area">Area</a></p>';
+        echo '<p><a href="/warehouse/settings/list?table=MeasureUnit">Measure Unit</a></p>';
+        echo '<p><a href="/warehouse/settings/list?table=Supplier">Supplier</a></p>';
+        echo '<p><a href="/warehouse/settings/list?table=Section">Section</a></p>';
+        echo '<p><a href="/warehouse/settings/list?table=RecipeCategory">Recipe Category</a></p>';
+        echo '<hr><p><a href="/warehouse/settings/list?table=Appsettings">Application Settings</a></p>';
+
+    ?>
+</div>
+<div class="settingsdata">
+    <div class="listsettingsdetail">
+
+            <?php
+                switch ($table) {
+                    case \Warehouse\Enum\EnumTableSettings::MEASUREUNIT:
+                        echo ('<h1>Measure Unit</h1>');
+                        echo ('<input name="new" type="button" onclick="newSetting()" id="new" value="New Measure Unit">');
+                        break;
+                    case \Warehouse\Enum\EnumTableSettings::SUPPLIER:
+                        echo ('<h1>Supplier</h1>');
+                        echo ('<input name="new" type="button" onclick="newSetting()" id="new" value="New Supplier">');
+                        break;
+                    case \Warehouse\Enum\EnumTableSettings::SECTION:
+                        echo ('<h1>Section</h1>');
+                        echo ('<input name="new" type="button" onclick="newSetting()" id="new" value="New Section">');
+                        break;
+                    case \Warehouse\Enum\EnumTableSettings::AREA:
+                        echo ('<h1>Area</h1>');
+                        echo ('<input name="new" type="button" onclick="newSetting()" id="new" value="New Area">');
+                        break;
+                    case \Warehouse\Enum\EnumTableSettings::RECIPE_CATEGORY:
+                        echo ('<h1>Recipe Category</h1>');
+                        echo ('<input name="new" type="button" onclick="newSetting()" id="new" value="New Recipe Category">');
+                        break;
+                    case \Warehouse\Enum\EnumTableSettings::APPSETTINGS:
+                        echo ('<h1>Application Settings</h1>');
+                        echo ('<input name="new" type="button" onclick="newSetting()" id="new" value="New Application Setting">');
+                        break;
+                }
+            ?>
+
+        <?php $paging = $this->paginationHelper($pagedSettings, $page, '/warehouse/settings/list/', 8, $table); ?>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <?php
+                    if ($table == \Warehouse\Enum\EnumTableSettings::APPSETTINGS){
+                        echo '<th>Reference</th>';
+                        echo '<th>Value</th>';
+                    } else {
+                        echo '<th>Description</th>';
+                        if (strcmp($table, \Warehouse\Enum\EnumTableSettings::MEASUREUNIT) == 0) {
+                            echo '<th>Abbreviation</th><th>Available in Stock</th>';
+                        }
+                        if (strcmp($table, \Warehouse\Enum\EnumTableSettings::SECTION) == 0) {
+                            echo '<th>Area</th>';
+                        }
+                    }
+                    echo '<th></th>';
+                ?>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach($pagedSettings as $settingsLine) { ?>
+            <tr>
+                <?php
+                if ($table == \Warehouse\Enum\EnumTableSettings::APPSETTINGS) {
+                    echo '<td><div class="col-md-10"><a class="settingdetail" href="?table=' . $table . '" id="' . $settingsLine->getId() . '">' . $settingsLine->getSettingReference() . '</a></div></td>';
+                    echo '<td>' . $settingsLine->getSettingValue() . '</td>';
+                } else {
+                    echo '<td><div class="col-md-10"><a class="settingdetail" href="?table=' . $table . '" id="' . $settingsLine->getId() . '">' . $settingsLine->getDescription() . '</a></div></td>';
+                    if (strcmp($table, \Warehouse\Enum\EnumTableSettings::MEASUREUNIT) == 0) {
+                        echo '<td>' . $settingsLine->getUnit() . '</td>';
+                        if ($settingsLine->getUseinstock() == 1)
+                            echo '<td><input type="checkbox" id="'.$settingsLine->getId().'_useinstock" value="Use in stock" checked disabled>';
+                        else
+                            echo '<td><input type="checkbox" id="'.$settingsLine->getId().'_useinstock" value="Use in stock"  disabled>';
+                    }
+                    if (strcmp($table, \Warehouse\Enum\EnumTableSettings::SECTION) == 0) {
+                        echo '<td>' . $settingsLine->getArea()->getDescription() . '</td>';
+                    }
+                }
+                echo '<td><a id="setDelete" onclick="DeleteSetting('.$settingsLine->getId().');" href=""><img style="max-height: 18px; width: auto;" src="../../../../img/trash.png" id="delete" alt=""/></a></td>';
+                ?>
+                </tr>
+            <?php } ?>
+            </tbody>
+        </table>
+        <div class="paging">
+            <?php if (sizeof($pagedSettings) > 0) echo $paging; ?>
+        </div>
+    </div>
+    <hr>
+    <div class="detailsettings">
+    </div>
+    <input type="hidden" id="table" value="<?php echo $table; ?>">
+
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        $('.settingdetail').click(function(){
+
+            var this_id=$(this).attr('id');
+            var this_href=$(this).attr('href');
+    //        alert(this_href);
+            $.ajax({
+                url:'/warehouse/settings/edit/id/'+this_id+this_href,
+                type:'post',
+                cache:false,
+                dataType: "json",
+                async:      false,
+                success:function(data)
+                {
+                    $('.detailsettings').html(data.contentpage);
+                },
+                error: function(xhr, status, errorThrown){
+                    if (xhr.status === 0) {
+                        alert('Not connected. Verify Network.');
+                    } else if (xhr.status == 404) {
+                        alert('Requested page not found. [404]');
+                    } else if (xhr.status == 500) {
+                        alert('Server Error [500].');
+                    } else if (errorThrown === 'parsererror') {
+                        alert('Requested JSON parse failed.');
+                    } else if (errorThrown === 'timeout') {
+                        alert('Time out error.');
+                    } else if (errorThrown === 'abort') {
+                        alert('Ajax request aborted.');
+                    } else {
+                        alert('Remote sever unavailable. Please try later');
+                    }
+                },
+                complete: function(xhr, textStatus) {
+                }
+
+            });
+            return false;
+        });
+    });
+
+    function updateSetting(){
+      //  event.preventDefault();
+       // alert("update");
+        $.ajax({
+            url:'/warehouse/settings/update/id/'+$("#id").val()+'?table='+$("#table").val(),//+'&update=true',
+            type:'post',
+            cache:false,
+//            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            async:      false,
+            data: $('#settings-form').serialize(),
+            success:function(data)
+            {
+           //         alert(data.contentpage);
+                $('.detailsettings').html(data.contentpage);
+//                $('.detailsettings').html('Record updated');
+            },
+            error: function(xhr, status, errorThrown){
+                if (xhr.status === 0) {
+                    alert('Not connected. Verify Network.');
+                } else if (xhr.status == 404) {
+                    alert('Requested page not found. [404]');
+                } else if (xhr.status == 500) {
+                    alert('Server Error [500].');
+                } else if (errorThrown === 'parsererror') {
+                    alert('Requested JSON parse failed.');
+                } else if (errorThrown === 'timeout') {
+                    alert('Time out error.');
+                } else if (errorThrown === 'abort') {
+                    alert('Ajax request aborted.');
+                } else {
+                    alert('Remote sever unavailable. Please try later');
+                }
+            },
+            complete: function(xhr, textStatus) {
+//                alert(xhr);
+    //            alert(textStatus);
+            }
+    });
+             //     alert('false');
+        return false;
+    }
+
+    function newSetting(){
+        //  event.preventDefault();
+       //  alert("new");
+        $.ajax({
+            url:'/warehouse/settings/add?table='+$("#table").val(),
+            type:'post',
+            cache:false,
+//            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            async:      false,
+    //        data: $('#settings-form').serialize(),
+            success:function(data)
+            {
+                      //   alert(data.contentpage);
+                  $('.detailsettings').html(data.contentpage);
+//                $('.detailsettings').html('Record updated');
+            },
+            error: function(xhr, status, errorThrown){
+                if (xhr.status === 0) {
+                    alert('Not connected. Verify Network.');
+                } else if (xhr.status == 404) {
+                    alert('Requested page not found. [404]');
+                } else if (xhr.status == 500) {
+                    alert('Server Error [500].');
+                } else if (errorThrown === 'parsererror') {
+                    alert('Requested JSON parse failed.');
+                } else if (errorThrown === 'timeout') {
+                    alert('Time out error.');
+                } else if (errorThrown === 'abort') {
+                    alert('Ajax request aborted.');
+                } else {
+                    alert('Remote sever unavailable. Please try later');
+                }
+            },
+            complete: function(xhr, textStatus) {
+            }
+        });
+        //     alert('false');
+        return false;
+    }
+
+    function DeleteSetting(id){
+     //   alert('delete'+$("#table").val()+id);
+        $.ajax({
+            url: '/warehouse/settings/delete/id/'+id+'?table='+$("#table").val(),
+            type:       'POST',
+            dataType:   'json',
+            async:      false,
+            success: function(data, status){
+                //      alert(data.msg);
+                $("#infoattachment").html(data.msg);
+            },
+            error: function(xhr, status, errorThrown){
+                if (xhr.status === 0) {
+                    alert('Not connected. Verify Network.');
+                } else if (xhr.status == 404) {
+                    alert('Requested page not found. [404]');
+                } else if (xhr.status == 500) {
+                    alert('Server Error [500].');
+                } else if (errorThrown === 'parsererror') {
+                    alert('Requested JSON parse failed.');
+                } else if (errorThrown === 'timeout') {
+                    alert('Time out error.');
+                } else if (errorThrown === 'abort') {
+                    alert('Ajax request aborted.');
+                } else {
+                    alert('Remote sever unavailable. Please try later');
+                }
+            },
+            complete: function(xhr, textStatus) {
+         //       alert(textStatus);
+            }
+        });
+    }
+</script>
+

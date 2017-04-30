@@ -1,0 +1,85 @@
+<?php
+
+$form = $this->form;
+$form->prepare();
+echo $this->form()->openTag($form);
+
+echo '<table>';
+echo '<tr>';
+echo '<td width="60">';
+echo $form->get('email')->getLabel();
+echo '</td>';
+echo '<td align="left" colspan="2">';
+echo '<div>'.$this->formElement($form->get('email')).'</div>';
+echo '<div>'.$this->formElementErrors($form->get('email'), array('class' => 'custom_form_errors')).'</div>';
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td width="60">';
+echo $form->get('name')->getLabel();
+echo '</td>';
+echo '<td align="left" colspan="2">';
+echo '<div>'.$this->formElement($form->get('name')).'</div>';
+echo '<div>'.$this->formElementErrors($form->get('name'), array('class' => 'custom_form_errors')).'</div>';
+echo '</td>';
+echo '</tr>';
+
+echo '<tr height="10"><td> </td></tr>';
+
+echo '<tr>';
+echo '<td width="60"> ';
+echo '</td>';
+echo '<td width="20" >';
+echo '</td>';
+echo '<td>';
+echo '<div align="right">'.$this->formElement($form->get('title')).'</div>';
+echo '<div align="left">'.$this->formElementErrors($form->get('title'), array('class' => 'custom_form_errors')).'</div>';
+echo '</td>';
+echo '</tr>';
+
+echo '<tr height="10"><td> </td></tr>';
+
+echo '<tr>';
+echo '<td width="60"> ';
+echo '</td>';
+echo '<td width="20">';
+echo '</td>';
+echo '<td>';
+echo '<div align="right">'.$this->formElement($form->get('message')).'</div>';
+echo '<div align="left">'.$this->formElementErrors($form->get('message'), array('class' => 'custom_form_errors')).'</div>';
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="3" align="right">';
+echo $this->formInput($form->get('back')). ' ';
+echo $this->formInput($form->get('send'));
+echo '</td>';
+echo '</tr>';
+
+/*
+foreach($form->getElements() as $element) {
+    if ($element->getName() == 'back') {
+        echo '<tr>';
+        echo '<td align="right"><div>';
+    } elseif ($element->getName() != 'send' and $element->getName() != 'back') {
+        echo '<td><div>';
+    }
+    echo $this->formElement($element);
+    echo $this->formElementErrors($element, array('class' => 'custom_form_errors'));
+    if ($element->getName() == 'back') {
+        echo ' ';
+    } elseif ($element->getName() == 'send') {
+        echo '</div></td></tr>';
+    } elseif ($element->getName() != 'send' and $element->getName() != 'back') {
+        echo '</div></td></tr>';
+    }
+}*/
+
+foreach($this->messages as $msg) {
+    echo '<tr><td align="center" class="custom_form_info">' . $msg . '</td></tr>';
+}
+echo '</table>';
+echo $this->form()->closeTag();
+?>

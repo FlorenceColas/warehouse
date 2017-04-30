@@ -1,0 +1,17 @@
+<p>Welcome
+    <?php
+    echo ($this->username);
+    echo ('<br>');
+    echo ('You are connect as '.$this->access);
+
+    $form = $this->logoffForm;
+    $form->prepare();
+
+    echo $this->form()->openTag($form);
+    echo '<div>'.$this->formRow($form->get('logoff')) .'</div>';
+
+    echo $this->form()->closeTag();
+
+    ?>
+
+</p>

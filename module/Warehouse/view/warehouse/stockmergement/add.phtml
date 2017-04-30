@@ -1,0 +1,92 @@
+<script type="text/javascript">
+    $(function(ready){
+        $("#area").on('change','select',function () {
+         //   alert("change");
+            $.ajax({
+                url:        '/warehouse/stock/loadsectionvalues/id/'+document.getElementsByName("stock[area_id]")[0].value,
+                type:       'POST',
+                dataType:   'json',
+                async:      false,
+                //    data:       $("#stock[area_id]").serialize(),
+                success: function(data){
+                    $('#section').html(data.section);
+                    //   alert($("#area :selected").text()); // The text content of the selected option
+                    //   alert($("#area").val()); // The value of the selected option
+
+                },
+                error : function(xhr, textStatus, errorThrown) {
+                    if (xhr.status === 0) {
+                        alert('Not connected. Verify Network.');
+                    } else if (xhr.status == 404) {
+                        alert('Requested page not found. [404]');
+                    } else if (xhr.status == 500) {
+                        alert('Server Error [500].');
+                    } else if (errorThrown === 'parsererror') {
+                        alert('Requested JSON parse failed.');
+                    } else if (errorThrown === 'timeout') {
+                        alert('Time out error.');
+                    } else if (errorThrown === 'abort') {
+                        alert('Ajax request aborted.');
+                    } else {
+                        alert('Remote sever unavailable. Please try later');
+                    }
+                }
+            });
+        });
+    });
+</script>
+<h1>New Stock</h1>
+<?php
+$form = $this->form;
+$form->prepare();
+echo $this->form()->openTag($form);
+echo '<div><p>Description: '.$this->formTextarea($this->form->get('stockmergement')->get('description')).'</p>';
+echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('description'), array('class' => 'custom_form_errors')).'</div>';
+echo '<p>Measure Unit: '. $this->formElement($this->form->get('stockmergement')->get('unit_id')). '</p>';
+echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('unit_id'), array('class' => 'custom_form_errors')).'</div>';
+echo '<hr>';
+
+echo '<h4>Equivalences:</h4>';
+echo '<table border="1" border-style="solid" border-color="black" width="50%" cellspacing=4 cellpadding=4>' ;
+echo '<tr>';
+echo '<th>Tablespoon</th>';
+echo '<th>Coffeespoon</th>';
+echo '<th>Teaspoon</th>';
+echo '<th>Pinch</th>';
+echo '<th>Piece</th>';
+echo '</tr>';
+echo '<tr>';
+echo '<td>'. $this->formElement($this->form->get('stockmergement')->get('eqtblsp'));
+echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('eqtblsp'), array('class' => 'custom_form_errors')).'</div>';
+echo '</td>';
+echo '<td>'. $this->formElement($this->form->get('stockmergement')->get('eqcofsp'));
+echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('eqcofsp'), array('class' => 'custom_form_errors')).'</div>';
+echo '</td>';
+echo '<td>'. $this->formElement($this->form->get('stockmergement')->get('eqteasp'));
+echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('eqteasp'), array('class' => 'custom_form_errors')).'</div>';
+echo '</td>';
+echo '<td>'. $this->formElement($this->form->get('stockmergement')->get('eqpinch'));
+echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('eqpinch'), array('class' => 'custom_form_errors')).'</div>';
+echo '</td>';
+echo '<td>'. $this->formElement($this->form->get('stockmergement')->get('eqpiece'));
+echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('eqpiece'), array('class' => 'custom_form_errors')).'</div>';
+echo '</td>';
+echo '</tr>';
+echo '</table>';
+
+echo '<hr>';
+
+echo '<p>Area: '. $this->formElement($this->form->get('stockmergement')->get('area_id')). '</p>';
+echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('area_id'), array('class' => 'custom_form_errors')).'</div>';
+echo '<div name="section" id="section"><p>Section: '. $this->formElement($this->form->get('stockmergement')->get('section_id'));
+echo '</p></div>';
+echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('section_id'), array('class' => 'custom_form_errors')).'</div>';
+echo '<p>Supplier: '. $this->formElement($this->form->get('stockmergement')->get('supplier_id')). '</p>';
+echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('supplier_id'), array('class' => 'custom_form_errors')).'</div>';
+
+echo '<hr>';
+
+echo ' '.$this->formInput($form->get('update'));
+echo ' '.$this->formInput($form->get('cancel'));
+echo $this->form()->closeTag();
+?>

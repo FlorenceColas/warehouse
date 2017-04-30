@@ -1,0 +1,53 @@
+<div class="criteriadata">
+    <h1>Search</h1>
+    <?php
+        $form = $this->criteriarecipeform;
+        $form->prepare();
+
+        echo $this->form()->openTag($form);                 //open form tag
+        echo $this->formSubmit($form->get('search'));       //search button
+        echo ('<p></p>');
+        echo ('<p>Description contents:</p>');
+        echo $this->formRow($form->get('description'));     //description field
+        echo ('<hr>');
+        echo ('<p>Category:</p>');
+        $category = $form->get('category');                   //category checkboxes
+        echo $this->formMultiCheckbox($category);
+        echo $this->form()->closeTag();                     //close form tag
+    ?>
+</div>
+<div class="listdata">
+    <?php $paging = $this->paginationHelper($pagedRecipe, $page, '/warehouse/recipe/list/', 50); ?>
+    <h1>Recipes</h1>
+    <form method="get" action="/warehouse/recipe/add">
+        <input type="submit" value="New Recipe"/>
+    </form>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Recipe</th>
+            <th>Serves</th>
+            <th>Preparation time</th>
+            <th>Total time</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach($pagedRecipe as $recipeLine) { ?>
+            <tr>
+                <td><div class="col-md-10">
+                        <a title="Add the 'Not on stock' ingredients to the shopping list" class="shoppinglist" href="/warehouse/recipe/shoppinglist/id/<?php echo $recipeLine->getId(); ?>?from=list"><img style="max-height: 18px; width: auto;" src="../../../../img/caddie.png" id="buy" alt=""/></a>
+                        <a title="Add the 'Out to stock' list" class="stockinterface" href="/warehouse/recipe/stockinterface/id/<?php echo $recipeLine->getId(); ?>?from=list"><img style="max-height: 18px; width: auto;" src="../../../../img/toque2.jpg" id="out" alt=""/></a>
+                    </div></td>
+                <td><div class="col-md-10"><a href="<?php echo ('/warehouse/recipe/display/id/'.$recipeLine->getId()); ?>"><?php echo $recipeLine->getDescription(); ?></a></div></td>
+                <td><div class="col-md-10"><?php echo $recipeLine->getServes(); ?></div></td>
+                <td><div class="col-md-10"><?php echo $recipeLine->getPreparationTime()->format('H:i'); ?></div></td>
+                <td><div class="col-md-10"><?php echo $recipeLine->getTotalTime()->format('H:i'); ?></div></td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+    <div class="paging">
+        <?php if (sizeof($pagedRecipe) > 0) echo $paging; ?>
+    </div>
+</div>

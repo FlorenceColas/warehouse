@@ -1,0 +1,32 @@
+<?php // require_once(realpath($_SERVER["DOCUMENT_ROOT"]).'/../module/Warehouse/phpGrid/conf.php'); ?>
+
+<h1>Add a new Recipe</h1>
+<?php
+//    $recipeForm->setAttribute('action', $this->url('post', array('action'=>'add')));
+    $recipeForm->prepare();
+
+    echo $this->form()->openTag($recipeForm);
+
+    $postFieldset = $recipeForm->get('recipe');
+
+    echo $this->formHidden($postFieldset->get('id'));
+    echo 'Description: '.$this->formTextarea($postFieldset->get('description'));
+    echo $this->formRow($postFieldset->get('serves'));
+    echo $this->formRow($postFieldset->get('preparationTime'));
+    echo $this->formRow($postFieldset->get('totalTime'));
+    echo 'Category: ' .$this->formRow($postFieldset->get('category_id'));
+    echo '<hr>';
+    echo '<p>Note: '.$this->formTextarea($postFieldset->get('note')).'</p>';
+    echo '<hr>';
+
+
+    echo $this->formInput($recipeForm->get('create'));
+    echo ' '.$this->formInput($recipeForm->get('backToList'));
+
+    echo $this->form()->closeTag($recipeForm);
+
+/*    $dg = new C_DataGrid('SELECT * FROM ingredients', 'id', 'ingredients');
+    $dg -> set_query_filter('recipe_id=1');//.$postFieldset->get('id'));
+    $dg -> display();
+*/
+?>

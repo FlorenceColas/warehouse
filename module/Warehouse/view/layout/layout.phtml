@@ -1,0 +1,72 @@
+<?php echo $this->doctype(); ?>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <?php echo $this->headTitle($this->translate('Nostradomus'))->setSeparator(' - ')->setAutoEscape(false) ?>
+
+        <?php echo $this->headMeta()
+            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+        ?>
+
+        <!-- Le styles -->
+        <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
+                        ->prependStylesheet($this->basePath('css/style.css'))
+                        ->prependStylesheet($this->basePath('css/bootstrap-theme.min.css'))
+                        ->prependStylesheet($this->basePath('css/bootstrap.css'))
+                   //     ->prependStylesheet($this->basePath('js/jquery-ui-themes-1.12.1/themes/black-tie/jquery-ui.css'))
+//        ->prependStylesheet($this->basePath('css/bootstrap.min.css')) ?>
+
+        <!-- Scripts -->
+        <?php echo $this->headScript()
+            ->prependFile($this->basePath('js/bootstrap.min.js'))
+            ->prependFile($this->basePath('js/jquery.min.js'))
+//            ->prependFile($this->basePath('/js/jquery.form.js'))
+//            ->prependFile($this->basePath('http://malsup.github.com/jquery.form.js'))
+            ->prependFile($this->basePath('js/respond.min.js'), 'text/javascript', array('conditional' => 'lt IE 9',))
+            ->prependFile($this->basePath('js/html5shiv.min.js'),   'text/javascript', array('conditional' => 'lt IE 9',))
+        ; ?>
+
+        <?php // echo $this->headScript()->prependFile($this->basePath('js/jquery-ui-1.12.1/jquery-ui.js')); ?>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="<?php echo $this->url('login') ?>"><?php echo $this->translate('Nostradomus') ?></a>
+                    <a class="navbar-brand" href="<?php echo $this->url('stock') ?>"><?php echo $this->translate('Inventory') ?></a>
+                    <a class="navbar-brand" href="<?php echo $this->url('stockmerge') ?>"><?php echo $this->translate('Stock') ?></a>
+                 <!--   <a class="navbar-brand" href="<?php //echo $this->url('management') ?>"><?php //echo $this->translate('Management') ?></a>-->
+                    <a class="navbar-brand" href="<?php echo $this->url('stockinterface') ?>"><?php echo $this->translate('In/Out') ?></a>
+                    <a class="navbar-brand" href="<?php echo $this->url('recipe') ?>"><?php echo $this->translate('Recipes') ?></a>
+                    <a class="navbar-brand" href="<?php echo $this->url('shopping') ?>"><?php echo $this->translate('Shopping') ?></a>
+                    <a class="navbar-brand" href="<?php echo $this->url('settings') ?>"><?php echo $this->translate('Settings') ?></a>
+                    <a class="navbar-brand" href="<?php echo $this->url('logout') ?>"><?php echo $this->translate('Logout') ?></a>
+                    <!--   <a class="navbar-brand" href="<?php //echo $this->url('test') ?>"><?php //echo $this->translate('Test') ?></a>-->
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <div class="container">
+            <?php echo $this->content; ?>
+            <br>
+        </div> <!-- /container -->
+        <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
+            <div class="container">
+                <footer>
+                    <a class="login-bar-default-bottom">Copyright &copy; <?php echo date('Y').' ' . $this->VERSION; ?> Florence Colas - Warehouse Portal. All rights reserved.</a>
+                </footer>
+            </div>
+        </nav>
+        <?php echo $this->inlineScript() ?>
+    </body>
+</html>

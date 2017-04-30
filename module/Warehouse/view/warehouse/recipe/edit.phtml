@@ -1,0 +1,176 @@
+<h1>Recipe update</h1>
+
+<?php
+$form = $this->form;
+$form->prepare();
+echo $this->form()->openTag($form);
+echo '<div><p>Description: '.$this->formTextarea($this->form->get('recipe')->get('description')).'</p>';
+echo '<div><p>Serves: '.$this->formInput($this->form->get('recipe')->get('serves')).'</p>';
+echo '<p>Preparation time (hh:mm): '.$this->formInput($this->form->get('recipe')->get('preparationTime')).'</p>';
+echo '<p>Total time (hh:mm): '.$this->formInput($this->form->get('recipe')->get('totalTime')).'</p>';
+echo '</div>';
+echo '<hr>';
+echo '<p><h4>Notes/Suggestions:</h4> '.$this->formTextarea($this->form->get('recipe')->get('note')).'</p>';
+echo '<p>Category: ' .$this->formRow($this->form->get('recipe')->get('category_id')).'</p>';
+echo '<hr>';
+
+$myrecipe = $this->form->get('recipe');
+
+echo '<div id="ingredients_div">';
+
+//echo $this->formCollection($myrecipe->get('ingredients'));
+echo $this->fieldCollection($myrecipe->get('ingredients'));
+
+echo '<h6><i>(Sequence / Ingredient / Quantity / Unit / Comment)</i></h6>';
+echo '<button onclick="return add_ingredient()">Add a new ingredient</button>';
+echo '  <button onclick="return remove_ingredient()">Remove the last ingredient</button>';
+echo '</div>';
+
+/***
+echo '<fieldset>';
+echo '
+			<span data-template="
+				<fieldset>
+					<input type="hidden" name="recipe[ingredients][__ingredients__][id]" value="">
+						<select name="recipe[ingredients][__ingredients__][stock_id]">
+							<option value=""></option>
+							<option value="200">Pâte feuilletée</option>
+							<option value="179">Pomme</option>
+						</select>
+					<input type="number" name="recipe[ingredients][__ingredients__][quantity]" min="1" max="10" step="1" value="">
+					<input type="text" name="recipe[ingredients][__ingredients__][description]" value="">
+					<input type="hidden" name="recipe[ingredients][__ingredients__][recipe_id]" value="">
+					<input type="hidden" name="recipe[ingredients][__ingredients__][sequence]" value="">
+				</fieldset>
+			</span>';
+
+$frmIngredients = $myrecipe->get('ingredients');
+echo '<table>';
+// render thead and tbody open if needed
+foreach ($frmIngredients as $ing){
+    echo '<tr>';
+    echo '<td>'.$this->formSelect($ing->get('stock_id')).'</td>';
+    echo '<td>'.$this->formInput($ing->get('quantity')).'</td>';
+    echo '<td>'.$this->formInput($ing->get('description')).'</td>';
+    echo '</tr>';
+}
+echo '</table>';
+***/
+/**
+echo '<fieldset>';
+echo '
+			<span data-template="
+				<fieldset>
+					<input type="hidden" name="recipe[ingredients][__ingredients__][id]" value="">
+						<select name="recipe[ingredients][__ingredients__][stock_id]">
+							<option value=""></option>
+							<option value="200">Pâte feuilletée</option>
+							<option value="179">Pomme</option>
+						</select>
+					<input type="number" name="recipe[ingredients][__ingredients__][quantity]" min="1" max="10" step="1" value="">
+					<input type="text" name="recipe[ingredients][__ingredients__][description]" value="">
+					<input type="hidden" name="recipe[ingredients][__ingredients__][recipe_id]" value="">
+					<input type="hidden" name="recipe[ingredients][__ingredients__][sequence]" value="">
+				</fieldset>
+			</span>';
+  **/
+/*
+echo '
+  <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Article description</th>
+            <th>Quantity</th>
+            <th>Comment</th>
+        </tr>
+        </thead>
+        <tbody>';
+
+ foreach($myrecipe->get('ingredients') as $ingredient) {
+     echo '<tr>';
+     echo '<td><div class="col-md-10">'.$this->formSelect($ingredient->get('stock_id')).'</div></td>';
+     echo '<td><div class="col-md-10">'.$this->formInput($ingredient->get('quantity')).'</div></td>';
+     echo '<td><div class="col-md-10">'.$this->formInput($ingredient->get('description')).'</div></td>';
+     echo ('</tr>');
+}
+echo '</tbody></table>';
+*/
+
+/*
+foreach($myrecipe->get('ingredients') as $ingredient) {
+    echo '<fieldset>'.$this->formSelect($ingredient->get('stock_id')).'</fieldset>';
+    echo '<fieldset>'.$this->formInput($ingredient->get('quantity')).'</fieldset>';
+    echo '<fieldset>'.$this->formInput($ingredient->get('description')).'</fieldset>';
+}
+*/
+
+//echo '</fieldset>';
+
+echo '<hr>';
+echo '<div id="instructions_div">';
+
+echo $this->formCollection($myrecipe->get('instructions'));
+
+echo '<h6><i>(Sequence / Instruction)</i></h6>';
+echo '<button onclick="return add_instruction()">Add a new instruction</button>';
+echo '  <button onclick="return remove_instruction()">Remove the last instruction</button>';
+echo '</div>';
+
+/*
+echo '
+  <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Sequence</th>
+            <th>Instruction</th>
+        </tr>
+        </thead>
+        <tbody>';
+
+foreach($myrecipe->get('instructions') as $instruction) {
+    echo '<tr>';
+    echo '<td><div class="col-md-10">'.$this->formInput($instruction->get('sequence')).'</div></td>';
+    echo '<td><div class="col-md-10">'.$this->formInput($instruction->get('description')).'</div></td>';
+    echo ('</tr>');
+}
+
+echo '</tbody></table>';
+*/
+
+echo '<hr>';
+
+echo $this->formInput($form->get('backToList'));
+echo ' '.$this->formInput($form->get('update'));
+echo ' '.$this->formInput($form->get('cancel'));
+echo $this->form()->closeTag();
+?>
+<script>
+    function add_ingredient() {
+        var currentCount = $('#ingredients_div > fieldset > fieldset ').length;
+        var template = $('#ingredients_div > fieldset > span').data('template');
+        template = template.replace(/__ingredients__/g, currentCount);
+        $('#ingredients_div > fieldset').append(template);
+        var x = document.getElementsByName('recipe[ingredients][' + currentCount + '][sequence]')[0].value = currentCount+1;
+        return false;
+    }
+
+    function remove_ingredient() {
+        $('#ingredients_div > fieldset > fieldset').last().remove();
+        return false;
+    }
+
+    function add_instruction() {
+        var currentCount = $('#instructions_div > fieldset > fieldset ').length;
+        var template = $('#instructions_div > fieldset > span').data('template');
+        template = template.replace(/__instructions__/g, currentCount);
+        $('#instructions_div > fieldset').append(template);
+        var x = document.getElementsByName('recipe[instructions][' + currentCount + '][sequence]')[0].value = currentCount+1;
+        return false;
+    }
+
+    function remove_instruction() {
+        $('#instructions_div > fieldset > fieldset').last().remove();
+        return false;
+    }
+</script>
+

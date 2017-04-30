@@ -1,0 +1,346 @@
+<h1>Stock In/Out</h1>
+<table>
+    <tr>
+        <td>
+            <form action="/warehouse/stockinterface/integrate">
+                <input name="integrate" type="submit"  id="integrate" value="Integrate in Inventory">
+            </form>
+        </td>
+    </tr>
+</table>
+
+<div class="shoppinglistdata">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Stock description</th>
+            <th>In/Out</th>
+            <th>From Shopping</th>
+            <th>To Stock</th>
+            <th>Article</th>
+            <th>In Stock</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach($this->get('stockinterface') as $sl) { ?>
+            <tr>
+                <td><div class="col-md-50">
+                        <?php echo $sl->getDescription(); ?>
+                    </div>
+                </td>
+                <td><div class="col-md-10">
+                        <?php
+                        if ($sl->getSens() == \Warehouse\Enum\EnumStockMovementType::MOVEMENT_SHOP_ADD)
+                            echo '<img class="plus" style="max-height: 18px; width: auto;" src="../../../../img/plus.png" id="'.$sl->getId().'" alt=""/>';
+                        else
+                            echo '<img class="minus" style="max-height: 18px; width: auto;" src="../../../../img/minus.png" id="'.$sl->getId().'" alt=""/>';
+                        ?>
+                    </div>
+                </td>
+                <td><div class="col-md-50">
+                        <input class="quantity" type="number" name="<?php echo $sl->getId(); ?>" id="q<?php echo $sl->getId(); ?>" min="0" max="1000" step="1" value="<?php echo $sl->getQuantity(); ?>">
+                        <select class="unit" name="<?php echo $sl->getId(); ?>" id="<?php echo $sl->getId(); ?>">
+                            <?php
+                            foreach ($units as $unit) {
+                                if ($sl->getUnit()->getId() === $unit->getId()) {
+                                    echo '<option value="' . $unit->getId() . '" selected>' . $unit->getDescription() . '</option>';
+                                }else {
+                                    echo '<option value="' . $unit->getId() . '">' . $unit->getDescription() . '</option>';
+                                }
+                            }
+                            echo '</select>';
+                            ?>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-50">
+                        <input class="quantitytointegrate" type="number" name="<?php echo $sl->getId(); ?>" id="qt<?php echo $sl->getId(); ?>" min="0" max="100" step="1" value="<?php echo $sl->getQuantitytointegrate(); ?>">
+                        <select class="unittointegrate" name="<?php echo $sl->getId(); ?>" id="<?php echo $sl->getId(); ?>">
+                            <?php
+                            foreach ($units as $unit) {
+                                if ($sl->getUnittointegrate()->getId() === $unit->getId()) {
+                                    echo '<option value="' . $unit->getId() . '" selected>' . $unit->getDescription() . '</option>';
+                                }else {
+                                    echo '<option value="' . $unit->getId() . '">' . $unit->getDescription() . '</option>';
+                                }
+                            }
+                            echo '</select>';
+                            ?>
+                            <img style="max-height: 18px; width: auto;" src="../../../../img/trash.png" alt="" id="delete" onclick="DeleteShockInterface(<?php echo $sl->getId() ?>);"/>
+                    </div>
+                </td>
+                <td>
+                    <div class="col-md-10">
+                        <select style="min-width:300px" class="stock" name="<?php echo $sl->getId(); ?>" id="<?php echo $sl->getId(); ?>">
+                            <?php
+                            foreach ($stock as $s) {
+                                if (($sl->getStock() != null) and ($sl->getStock()->getId() == $s->getId())) {
+                                    echo '<option value="' . $s->getId() . '" selected>' . $s->getDescription() . '</option>';
+                                }else {
+                                    if (($s->getMerge()->getId() == $sl->getMerge()->getId()))
+                                        echo '<option value="' . $s->getId() . '">' . $s->getDescription() . '</option>';
+                                }
+                            }
+                            echo '</select>';
+                            ?>
+                    </div>
+                </td>
+                <td>
+                    <span id="stockqty<?php echo $sl->getId(); ?>" name="stockqty<?php echo $sl->getId(); ?>">
+                    <?php
+                    $find = false;
+                    $i = 0;
+                    $qty1 = '';
+                    foreach ($stock as $s) {
+                        if (($sl->getStock() != null) and ($sl->getStock()->getId() == $s->getId())) {
+                            if ($s->getQuantity() <= 0) {
+                                echo '<font color="red">'.$s->getQuantity() .'</font>' . ' x '.$s->getNetquantity();
+                            } else {
+                                echo '<font color="green">'.$s->getQuantity() .'</font>' . ' x '.$s->getNetquantity();
+                            }
+                            $find = true;
+                        }else {
+                            if (($s->getMerge()->getId() == $sl->getMerge()->getId())) {
+                                if ($i == 0) {
+                                    if ($s->getQuantity() <= 0) {
+                                        $qty1 = '<font color="red">'.$s->getQuantity() .'</font>' . ' x '.$s->getNetquantity();
+                                    } else {
+                                        $qty1 = '<font color="green">'.$s->getQuantity() .'</font>' . ' x '.$s->getNetquantity();
+                                    }
+                                    $i = 1;
+                                }
+                            }
+                        }
+                        if ($find) break;
+                    }
+                    if (!$find) echo $qty1;
+                    ?>
+                    </span><?php echo ' '.$sl->getMerge()->getUnit()->getUnit(); ?>
+                </td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        $('.stock').click(function(){
+            var optionSelected = $("option:selected", this);
+            var valueSelected = this.value;
+            var id = this.id;
+            $.ajax({
+                url:'/warehouse/stockinterface/update/id/'+this.id+'?stock='+valueSelected,
+                type:'post',
+                dataType: "json",
+                async:      false,
+                success:function(data)
+                {
+                    $('#stockqty'+id).html(data.netqty);
+                    //window.location.href = '/warehouse/stockinterface/list';
+                },
+                error: function(xhr, status, errorThrown){
+                    if (xhr.status === 0) {
+                        alert('Not connected. Verify Network.');
+                    } else if (xhr.status == 404) {
+                        alert('Requested page not found. [404]');
+                    } else if (xhr.status == 500) {
+                        alert('Server Error [500].');
+                    } else if (errorThrown === 'parsererror') {
+                        alert('Requested JSON parse failed.');
+                    } else if (errorThrown === 'timeout') {
+                        alert('Time out error.');
+                    } else if (errorThrown === 'abort') {
+                        alert('Ajax request aborted.');
+                    } else {
+                        alert('Remote sever unavailable. Please try later');
+                    }
+                },
+                complete: function(xhr, textStatus) {
+                }
+            });
+        });
+
+        $('.quantity').keyup(function (e) {
+            if (e.keyCode === 13) {
+                $('.quantity').blur();
+            }
+        });
+
+        $('.quantity').blur(function(){
+            var quantity = $('#'+this.id);
+            $.ajax({
+                url:'/warehouse/stockinterface/update/id/'+this.name+'?quantity='+quantity.val(),
+                type:'post',
+                dataType: "json",
+                async:      false,
+                success:function(data)
+                {
+                    window.location.href = '/warehouse/stockinterface/list';
+                },
+                error: function(xhr, status, errorThrown){
+                    if (xhr.status === 0) {
+                        alert('Not connected. Verify Network.');
+                    } else if (xhr.status == 404) {
+                        alert('Requested page not found. [404]');
+                    } else if (xhr.status == 500) {
+                        alert('Server Error [500].');
+                    } else if (errorThrown === 'parsererror') {
+                        alert('Requested JSON parse failed.');
+                    } else if (errorThrown === 'timeout') {
+                        alert('Time out error.');
+                    } else if (errorThrown === 'abort') {
+                        alert('Ajax request aborted.');
+                    } else {
+                        alert('Remote sever unavailable. Please try later');
+                    }
+                },
+                complete: function(xhr, textStatus) {
+                }
+            });
+        });
+
+        $('.unit').click(function(){
+            var optionSelected = $("option:selected", this);
+            var valueSelected = this.value;
+            var id = this.id;
+            $.ajax({
+                url:'/warehouse/stockinterface/update/id/'+this.id+'?unit='+valueSelected,
+                type:'post',
+                dataType: "json",
+                async:      false,
+                success:function(data)
+                {
+                    //window.location.href = '/warehouse/stockinterface/list';
+                },
+                error: function(xhr, status, errorThrown){
+                    if (xhr.status === 0) {
+                        alert('Not connected. Verify Network.');
+                    } else if (xhr.status == 404) {
+                        alert('Requested page not found. [404]');
+                    } else if (xhr.status == 500) {
+                        alert('Server Error [500].');
+                    } else if (errorThrown === 'parsererror') {
+                        alert('Requested JSON parse failed.');
+                    } else if (errorThrown === 'timeout') {
+                        alert('Time out error.');
+                    } else if (errorThrown === 'abort') {
+                        alert('Ajax request aborted.');
+                    } else {
+                        alert('Remote sever unavailable. Please try later');
+                    }
+                },
+                complete: function(xhr, textStatus) {
+                }
+            });
+        });
+
+        $('.quantitytointegrate').keyup(function (e) {
+            if (e.keyCode === 13) {
+                $('.quantitytointegrate').blur();
+            }
+        });
+
+        $('.quantitytointegrate').blur(function(){
+            var quantity = $('#'+this.id);
+            $.ajax({
+                url:'/warehouse/stockinterface/update/id/'+this.name+'?quantitytointegrate='+quantity.val(),
+                type:'post',
+                dataType: "json",
+                async:      false,
+                success:function(data)
+                {
+                    window.location.href = '/warehouse/stockinterface/list';
+                },
+                error: function(xhr, status, errorThrown){
+                    if (xhr.status === 0) {
+                        alert('Not connected. Verify Network.');
+                    } else if (xhr.status == 404) {
+                        alert('Requested page not found. [404]');
+                    } else if (xhr.status == 500) {
+                        alert('Server Error [500].');
+                    } else if (errorThrown === 'parsererror') {
+                        alert('Requested JSON parse failed.');
+                    } else if (errorThrown === 'timeout') {
+                        alert('Time out error.');
+                    } else if (errorThrown === 'abort') {
+                        alert('Ajax request aborted.');
+                    } else {
+                        alert('Remote sever unavailable. Please try later');
+                    }
+                },
+                complete: function(xhr, textStatus) {
+                }
+            });
+        });
+
+        $('.unittointegrate').click(function(){
+            var optionSelected = $("option:selected", this);
+            var valueSelected = this.value;
+            var id = this.id;
+            $.ajax({
+                url:'/warehouse/stockinterface/update/id/'+this.id+'?unittointegrate='+valueSelected,
+                type:'post',
+                dataType: "json",
+                async:      false,
+                success:function(data)
+                {
+                    //window.location.href = '/warehouse/stockinterface/list';
+                },
+                error: function(xhr, status, errorThrown){
+                    if (xhr.status === 0) {
+                        alert('Not connected. Verify Network.');
+                    } else if (xhr.status == 404) {
+                        alert('Requested page not found. [404]');
+                    } else if (xhr.status == 500) {
+                        alert('Server Error [500].');
+                    } else if (errorThrown === 'parsererror') {
+                        alert('Requested JSON parse failed.');
+                    } else if (errorThrown === 'timeout') {
+                        alert('Time out error.');
+                    } else if (errorThrown === 'abort') {
+                        alert('Ajax request aborted.');
+                    } else {
+                        alert('Remote sever unavailable. Please try later');
+                    }
+                },
+                complete: function(xhr, textStatus) {
+                }
+            });
+        });
+    });
+
+    function DeleteShockInterface(id) {
+        $.ajax({
+            url: '/warehouse/stockinterface/delete/id/'+id,
+            type:       'POST',
+            dataType:   'json',
+            async:      false,
+            success: function(data, status){
+                window.location.href = '/warehouse/stockinterface/list';
+            },
+            error: function(xhr, status, errorThrown){
+                if (xhr.status === 0) {
+                    alert('Not connected. Verify Network.');
+                } else if (xhr.status == 404) {
+                    alert('Requested page not found. [404]');
+                } else if (xhr.status == 500) {
+                    alert('Server Error [500].');
+                } else if (errorThrown === 'parsererror') {
+                    alert('Requested JSON parse failed.');
+                } else if (errorThrown === 'timeout') {
+                    alert('Time out error.');
+                } else if (errorThrown === 'abort') {
+                    alert('Ajax request aborted.');
+                } else {
+                    alert('Remote sever unavailable. Please try later');
+                }
+            },
+            complete: function(xhr, textStatus) {
+                //       alert(textStatus);
+            }
+        });
+    }
+
+</script>

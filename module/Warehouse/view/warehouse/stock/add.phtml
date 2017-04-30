@@ -1,0 +1,92 @@
+<script type="text/javascript">
+    $(function(ready){
+        $("#merge").on('change','select',function () {
+            $.ajax({
+                url:        '/warehouse/stockmergement/loadunit/id/'+document.getElementsByName("stock[merge_id]")[0].value,
+                type:       'POST',
+                dataType:   'json',
+                async:      false,
+                success: function(data){
+                    $('#unitfromlabel').html(data.unit);
+                },
+                error : function(xhr, textStatus, errorThrown) {
+                    if (xhr.status === 0) {
+                        alert('Not connected. Verify Network.');
+                    } else if (xhr.status == 404) {
+                        alert('Requested page not found. [404]');
+                    } else if (xhr.status == 500) {
+                        alert('Server Error [500].');
+                    } else if (errorThrown === 'parsererror') {
+                        alert('Requested JSON parse failed.');
+                    } else if (errorThrown === 'timeout') {
+                        alert('Time out error.');
+                    } else if (errorThrown === 'abort') {
+                        alert('Ajax request aborted.');
+                    } else {
+                        alert('Remote sever unavailable. Please try later');
+                    }
+                }
+            });
+        });
+        $("#chkautobarcode").change(function() {
+            event.preventDefault();
+            if ($(this).is(':checked')){
+                $.ajax({
+                    type:       'POST',
+                    url:        '/warehouse/tools/generatebarcode',
+                    dataType:   'json',
+                    async:      false,
+                    success: function(data){
+                        $('#barcode').val(data.barcode);
+                    },
+                    error : function(xhr, textStatus, errorThrown) {
+                        if (xhr.status === 0) {
+                            alert('Not connected. Verify Network.');
+                        } else if (xhr.status == 404) {
+                            alert('Requested page not found. [404]');
+                        } else if (xhr.status == 500) {
+                            alert('Server Error [500].');
+                        } else if (errorThrown === 'parsererror') {
+                            alert('Requested JSON parse failed.');
+                        } else if (errorThrown === 'timeout') {
+                            alert('Time out error.');
+                        } else if (errorThrown === 'abort') {
+                            alert('Ajax request aborted.');
+                        } else {
+                            alert('Remote sever unavailable. Please try later');
+                        }
+                    }
+                });
+            } else {
+                $('#barcode').val('');
+            }
+        });
+    });
+</script>
+<h1>New Article</h1>
+<?php
+$form = $this->form;
+$form->prepare();
+echo $this->form()->openTag($form);
+echo '<div><p>Barcode: '.$this->fieldRow($this->form->get('stock')->get('barcode')).'  ';
+echo $this->fieldRow($this->form->get('stock')->get('chkautobarcode')). ' auto generate';
+echo '</p>';
+echo '<div><p>Description: '.$this->formRow($this->form->get('stock')->get('description')).'</p>';
+echo '<div id="merge">';
+echo '<div><p>Short description: '.$this->formRow($this->form->get('stock')->get('merge_id'));
+echo ' ' .$this->fieldRow($this->form->get('stock')->get('prefered')). ' prefered';
+echo '</p></div>';
+echo '<div><p>Supplier reference: '.$this->formRow($this->form->get('stock')->get('supplierreference')).'</p>';
+echo '<div><p>Notes: '.$this->formRow($this->form->get('stock')->get('notes')).'</p>';
+echo '<hr>';
+echo '<div><p>Quantity: '.$this->formRow($this->form->get('stock')->get('quantity')).'</p>';
+echo '<div><p>Info threshold: '.$this->formRow($this->form->get('stock')->get('infothreshold')).'</p>';
+echo '<div><p>Critical threshold: '.$this->formRow($this->form->get('stock')->get('criticalthreshold')).'</p>';
+echo '<hr>';
+echo '<div><p>Net Quantity: '.$this->formRow($this->form->get('stock')->get('netquantity')).' <span id="unitfromlabel" name ="unitfromlabel"></span></p>';
+echo '<div><p>Status: '.$this->formRow($this->form->get('stock')->get('status')).'</p>';
+echo '<hr>';
+echo $this->formInput($form->get('update'));
+echo ' '.$this->formInput($form->get('cancel'));
+echo $this->form()->closeTag();
+?>

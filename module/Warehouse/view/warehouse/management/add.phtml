@@ -1,0 +1,21 @@
+<h1>New Article</h1>
+<?php
+$form = $this->form;
+$form->prepare();
+echo $this->form()->openTag($form);
+echo '<div><p>Barcode: '.$this->fieldRow($this->form->get('stock')->get('barcode')).'</p>';
+echo '<div><p>Description: '.$this->formRow($this->form->get('stock')->get('description')).'</p>';
+echo '<div><p>Quantity: '.$this->formRow($this->form->get('stock')->get('quantity')).'</p>';
+echo '<div><p>Info threshold: '.$this->formRow($this->form->get('stock')->get('infothreshold')).'</p>';
+echo '<div><p>Critical threshold: '.$this->formRow($this->form->get('stock')->get('criticalthreshold')).'</p>';
+echo '<div><p>Supplier: '.$this->formRow($this->form->get('stock')->get('supplier_id')).'</p>';
+echo '<div><p>Section: '.$this->formRow($this->form->get('stock')->get('section_id')).'</p>';
+echo '<div><p>Status: '.$this->formRow($this->form->get('stock')->get('status')).'</p>';
+echo '<div><p>Barcode merger: '.$this->formRow($this->form->get('stock')->get('barcodemerger')).'</p>';
+echo '<div><p>Merged quantity: '.$this->formRow($this->form->get('stock')->get('mergedquantity')).'</p>';
+echo '<hr>';
+
+echo $this->formInput($form->get('update'));
+echo ' '.$this->formInput($form->get('cancel'));
+echo $this->form()->closeTag();
+?>
