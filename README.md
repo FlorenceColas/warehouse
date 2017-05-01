@@ -1,57 +1,49 @@
+# Warehouse
+
 ## Getting started
 
-Warehouse is an open source project which has been developed to learn Zend Framework 2. It is composed with four main functionalities:
+Warehouse is an open source project which has been developed to learn Zend Framework 2. It is composed with five main functionalities:
 * an inventory with available articles
 * a manual in/out stock management
 * a shopping list
 * a recipes list with the ingredients based on articles referenced in the database
+* a web service to download the shopping list on a mobile device. The apps (iOS) is in development and will be coming soon.
 
-## Technical part
+The user is invited to connect with credentials:
 
-### Authentication Service
+![authentication](/images/login.png)
 
-A service has been created to manage the authentication. The service is create using a factory. This factory is defined in `module.config.php`
+Then he is able to navigate on the site using the menu on the top bar:
 
-```php 
-    'service_manager' => [
-        'factories' => [
-            'AuthService' => 'Warehouse\Factory\AuthServiceFactory',
-        ],
-    ],
-```
+![welcome](/images/welcome.png)
 
-The service needs three files:
-* `AuthServiceFactory.php` (available in [\module\Warehouse\src\Warehouse\Factory](module/Warehouse/src/Warehouse/Factory/)). It implements `FactoryInterface` and redefine the `createService` function
+## Build with
 
-```php
-class AuthServiceFactory implements FactoryInterface
-{
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        return new AuthService($serviceLocator);
-    }
-}
-```
+* Php using Zend Framework 2
+* CSS
+* jQuery
+* MySQL
 
-* `AuthServiceInterface.php` (available in [\module\Warehouse\src\Warehouse\Service](module/Warehouse/src/Warehouse/Service/)). It contains two functions:
+## Technical details
 
-```php
-interface AuthServiceInterface
-{
-    public function authenticateUser($logon, $password, $rememberMe);
+The application implements:
 
-    public function sessionIsValid();
-}
-```
+* Doctrine module for data persistence 
+* Authentication service (to authenticate users)
+* Service manager (to send emails and for tracability)
+* PDF generator
 
-* `AuthService.php` (available in [\module\Warehouse\src\Warehouse\Service](module/Warehouse/src/Warehouse/Service/)). It extends AuthenticationService:
+All the explanation about these implementations are written in the [Wiki](/wiki) part.
 
-```php
-class AuthService extends AuthenticationService implements AuthServiceInterface
-{
-    ...
-}
-```
+## Contributors
 
+If you are having any good suggestions, just drop me a line [:email:](http://nostradomus.ddns.net/contactform.html).
+If feasible, I'll be happy to implement proposed improvements.
+And if you are having lots of time, I'll be happy to share the work with you ;-).
 
-More content coming soon...
+When you create your own version, don't forget to send us a nice screenshot, or a link to your implementation. We'll be happy to publish it in the :confetti_ball:Hall of Fame:confetti_ball:.
+
+## License
+
+This project is under MIT License. 
+
