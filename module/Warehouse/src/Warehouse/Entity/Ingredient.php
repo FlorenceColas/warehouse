@@ -1,23 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 28/03/16
- * Version: 1.00
- * Ingredient: Entity corresponding to ingredients table
- * Properties:
- *      - id
- *      - description
- *      - quantity
- *      - recipe (recipe_id)
- *      - stock (stock_id)
- *      - unit (unit_id)
- *      - sequence
- *      - availability
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -35,6 +16,21 @@ class Ingredient
      */
     protected $id;
     /**
+     * @ORM\ManyToOne(targetEntity="MeasureUnit")
+     * @ORM\JoinColumn(name="measureunit_id", referencedColumnName="id", nullable=false)
+     */
+    protected $measureunit;
+    /**
+     * @ORM\ManyToOne(targetEntity="Recipe", inversedBy="ingredients")
+     * @ORM\JoinColumn(name="recipes_id", referencedColumnName="id", nullable=false)
+     */
+    private $recipe;
+    /**
+     * @ORM\ManyToOne(targetEntity="StockMergement")
+     * @ORM\JoinColumn(name="stockmergement_id", referencedColumnName="id", nullable=true)
+     */
+    protected $stockmergement;
+    /**
      * @ORM\Column(type="string",nullable= true)
      */
     protected $description;
@@ -42,21 +38,6 @@ class Ingredient
      * @ORM\Column(type="decimal", precision=6, scale=2)
      */
     protected $quantity;
-	 /**
-     * @ORM\ManyToOne(targetEntity="Recipe", inversedBy="ingredients")
-     * @ORM\JoinColumn(name="recipe_id", referencedColumnName="id", nullable=false)
-     */
-    private $recipe;
-    /**
-     * @ORM\ManyToOne(targetEntity="StockMergement")
-     * @ORM\JoinColumn(name="merge_id", referencedColumnName="id", nullable=true)
-     */
-    protected $stockmergement;
-    /**
-     * @ORM\ManyToOne(targetEntity="MeasureUnit")
-     * @ORM\JoinColumn(name="unit_id", referencedColumnName="id", nullable=false)
-     */
-    protected $unit;
     /**
      * @ORM\Column(type="integer")
      */
@@ -114,7 +95,7 @@ class Ingredient
     }
 
     /**
-     * @return decimal
+     * @return float
      */
     public function getQuantity()
     {
@@ -122,7 +103,7 @@ class Ingredient
     }
 
     /**
-     * @param decimal $quantity
+     * @param float $quantity
      */
     public function setQuantity($quantity)
     {
@@ -148,17 +129,17 @@ class Ingredient
     /**
      * @return MeasureUnit
      */
-    public function getUnit()
+    public function getMeasureUnit()
     {
-        return $this->unit;
+        return $this->measureunit;
     }
 
     /**
-     * @param MeasureUnit $unit
+     * @param MeasureUnit $measureUnit
      */
-    public function setUnit($unit)
+    public function setMeasureUnit($measureUnit)
     {
-        $this->unit = $unit;
+        $this->measureunit = $measureUnit;
     }
 
     /**

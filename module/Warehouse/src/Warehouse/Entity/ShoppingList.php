@@ -1,26 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 02/04/16
- * Version: 1.00
- * ShoppingList: Entity corresponding to shoppinglist table
- * Properties:
- *      - id
- *      - stock (stock_id)
- *      - description
- *      - quantity
- *      - unit (unit_id)
- *      - section (section_id)
- *      - supplier (supplier_id)
- *      - priority
- *      - area (area_id)
- *      - status
- *      - sendtostock
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -38,23 +16,20 @@ class ShoppingList
      */
     protected $id;
     /**
-     * @ORM\ManyToOne(targetEntity="StockMergement")
-     * @ORM\JoinColumn(name="merge_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Area")
+     * @ORM\JoinColumn(name="area_id", referencedColumnName="id", nullable=false)
      */
-    protected $stockmergement;
-    /**
-     * @ORM\Column(type="string")
-     */
-    protected $description;
-    /**
-     * @ORM\Column(type="integer")
-     */
-    protected $quantity;
+    protected $area;
     /**
      * @ORM\ManyToOne(targetEntity="MeasureUnit")
-     * @ORM\JoinColumn(name="unit_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="measureunit_id", referencedColumnName="id", nullable=false)
      */
-    protected $unit;
+    protected $measureunit;
+    /**
+     * @ORM\ManyToOne(targetEntity="Recipe")
+     * @ORM\JoinColumn(name="recipes_id", referencedColumnName="id", nullable=true)
+     */
+    protected $recipe;
     /**
      * @ORM\ManyToOne(targetEntity="Section")
      * @ORM\JoinColumn(name="section_id", referencedColumnName="id", nullable=false)
@@ -66,27 +41,30 @@ class ShoppingList
      */
     protected $supplier;
     /**
+     * @ORM\ManyToOne(targetEntity="StockMergement")
+     * @ORM\JoinColumn(name="stockmergement_id", referencedColumnName="id", nullable=false)
+     */
+    protected $stockmergement;
+    /**
+     * @ORM\Column(type="string")
+     */
+    protected $description;
+    /**
      * @ORM\Column(type="integer")
      */
     protected $priority;
     /**
-     * @ORM\ManyToOne(targetEntity="Area")
-     * @ORM\JoinColumn(name="area_id", referencedColumnName="id", nullable=false)
-     */
-    protected $area;
-    /**
      * @ORM\Column(type="integer")
      */
-    protected $status;
-    /**
-     * @ORM\ManyToOne(targetEntity="Recipe")
-     * @ORM\JoinColumn(name="recipe_id", referencedColumnName="id", nullable=true)
-     */
-    protected $recipe;
+    protected $quantity;
     /**
      * @ORM\Column(type="integer")
      */
     protected $sendtostock;
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $status;
 
     /**
      * @return mixed
@@ -171,17 +149,17 @@ class ShoppingList
     /**
      * @return mixed
      */
-    public function getUnit()
+    public function getMeasureUnit()
     {
-        return $this->unit;
+        return $this->measureunit;
     }
 
     /**
-     * @param mixed $unit
+     * @param mixed $measureunit
      */
-    public function setUnit($unit)
+    public function setMeasureUnit($measureunit)
     {
-        $this->unit = $unit;
+        $this->measureunit = $measureunit;
     }
 
     /**

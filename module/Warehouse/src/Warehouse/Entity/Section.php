@@ -1,18 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 03/02/16
- * Version: 1.00
- * RecipeCategory: Entity corresponding to recipecategory table
- * Properties:
- *      - id
- *      - description
- *      - area (area_id)
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -36,7 +22,6 @@ class Section
     /**
      * @ORM\ManyToOne(targetEntity="Area")
      * @ORM\JoinColumn(name="area_id", referencedColumnName="id", nullable=false)
-     * @var Section
      */
     protected $area;
 

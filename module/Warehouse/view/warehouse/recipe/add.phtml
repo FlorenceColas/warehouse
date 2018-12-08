@@ -30,3 +30,14 @@
     $dg -> display();
 */
 ?>
+<!-- empty div to save dialog temporary -->
+<div id="winpopup">
+    <?php
+    if ($this->get('messages') != null) {
+        foreach ($this->get('messages') as $inputName => $messageInputs) {
+            echo '  <span id="error-form-message">' . $messageInputs . '</span>';
+        }
+    }
+    ?>
+</div>
+

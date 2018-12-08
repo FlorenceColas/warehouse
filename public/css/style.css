@@ -63,6 +63,9 @@ div.container a.brand {
 #valid-form-message{
     color:#00cc00;
 }
+.div-info-form-message{
+    color:#cccc00;
+}
 
 .login-bar-default {
     color: #ffffff !important;

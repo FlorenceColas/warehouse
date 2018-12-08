@@ -1,0 +1,259 @@
+<div class="criteriadata">
+    <h1>Search</h1>
+    <form method="post" action="/warehouse/inventory/list">
+        <input type="submit" value="Search"/>
+        <p></p>
+        <p>Description contents:</p>
+        <input type="text" name="description" id="description" value="">
+        <hr>
+        <div id="areaList">Area:
+            <select name="area" v-model="selectedArea">
+                <option v-for="area in areas" :value="area.id">{{area.description}}</option>
+            </select>
+        </div>
+        <hr>
+        <span id="sectionList">
+            <p>Section:</p>
+            <div class="text-uppercase text-bold"></div>
+            <label>
+                <input type="checkbox" v-model="allChecked" @click="checkAll">
+                All
+            </label>
+            <div v-for="section in sections">
+                <label>
+                    <input type="checkbox" :id="section.description" name="sections[]" :value="section.id" v-model="sectionsIds" @change="check(section.id)">
+                    {{section.description}}
+                </label>
+            </div>
+        </span>
+    </form>
+</div>
+
+
+<div class="listdata" id="stockList">
+    <h1>Inventory</h1>
+    <form method="get" action="/warehouse/inventory/add">
+        <input type="submit" value="New"/>
+    </form>
+    <form method="get" action="/warehouse/inventory/exportxls">
+        <input type="submit" value="Export XLS">
+    </form>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th @click="sort('description')">
+                <u v-if="currentSort === 'description'">Description</u>
+                <font v-else>Article description</font>
+            </th>
+            <th @click="sort('status')">
+                <u v-if="currentSort === 'status'">Status</u>
+                <font v-else>Status</font>
+            </th>
+            <th @click="sort('quantity')">
+                <u v-if="currentSort === 'quantity'">Quantity</u>
+                <font v-else>Quantity</font>
+            </th>
+            <th @click="sort('infothreshold')">
+                <u v-if="currentSort === 'infothreshold'">Info threshold</u>
+                <font v-else>Info threshold</font>
+            </th>
+            <th @click="sort('criticalthreshold')">
+                <u v-if="currentSort === 'criticalthreshold'">Critical threshold</u>
+                <font v-else>Critical threshold</font>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="stock in sortedStock">
+            <td align="center">
+                <div v-if="stock.filename != null" class="col-md-10">
+                    <img style="max-height: 20px; width: auto;" :src="'/upload/stock/thumb/' + stock.filename" alt="no photo"/>
+                </div>
+            </td>
+            <td>
+                <div class="col-md-10">
+                    <a title="Add 1 quantity of the article to the shopping list" class="shoppinglist" :href="'/warehouse/inventory/shoppinglist/id/' + stock.id + '?from=list'">
+                        <img style="max-height: 18px; width: auto;" src="../../../../img/caddie.png" id="buy" alt=""/>
+                    </a>
+                </div>
+            </td>
+            <td><div class="col-md-10"><a :href="'/warehouse/inventory/display/id/' + stock.id + ''">{{stock.description}}</a></div></td>
+            <td>{{stock.status}}</td>
+            <td>{{stock.quantity}} x {{stock.netquantity}} {{stock.unit}}</td>
+            <td>{{stock.infothreshold}}</td>
+            <td>{{stock.criticalthreshold}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <table width="370px">
+        <tr v-if="pagesNumber > 0">
+            <td width="5%" align="left"><a @click="firstPage"><<</a></td>
+            <td width="5%" align="right"><a @click="prevPage"><</a></td>
+            <td width="30%" align="middle">Page {{currentPage}} / {{pagesNumber}}</td>
+            <td width="5%" align="left"><a @click="nextPage">></a></td>
+            <td width="5%" align="right"><a @click="lastPage">>></a></td>
+            <td width="50%">
+                <select id="limit" @change="changeLimit">
+                    <option value="20">20</option>
+                    <option value="40">40</option>
+                    <option value="60">60</option>
+                    <option value="100">100</option>
+                </select>
+                (per page)
+            </td>
+        </tr>
+        <tr v-else>
+            <td width="10%" align="left"><i>No data corresponding to these criterias</i></td>
+        </tr>
+    </table>
+</div>
+
+<!--<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>-->
+<script src="../../../../js/vue.min.js"></script>
+<script>
+    const areaList = new Vue({
+        el: '#areaList',
+        data: {
+            areas: [],
+            selectedArea: ''
+        },
+        created: function () {
+            this.areas = <?= $this->areas; ?>;
+            this.selectedArea = <?= $this->selectedArea; ?>;
+        }
+    });
+
+    const sectionList = new Vue({
+        el: '#sectionList',
+        data: {
+            sections: [],
+            sectionsIds: [],
+            checked: [],
+            allChecked: false,
+            sectionSize: 0,
+            sortedSections: []
+        },
+        created: function () {
+            this.sections = <?= $this->sections; ?>;
+            for (section in this.sections) {
+                if (this.sections[section].checked) {
+                    this.sectionsIds.push(this.sections[section].id.toString());
+                }
+                this.sectionSize = this.sectionSize + 1;
+            }
+
+            if (this.sectionSize == this.sectionsIds.length) {
+                this.allChecked = true;
+            } else {
+                this.allChecked = false;
+            }
+        },
+        methods: {
+            checkAll: function() {
+                this.sectionsIds = [];
+                for (section in this.sections) {
+                    if (this.allChecked) {
+                        this.sectionsIds.push(this.sections[section].id.toString());
+                        this.sections[section].checked = true;
+                    } else {
+                        this.sections[section].checked = false;
+                    }
+                }
+            },
+            check: function(id) {
+                if (this.sections[id].checked) {
+                    this.sections[id].checked = false;
+                } else {
+                    this.sections[id].checked = true;
+                }
+
+                this.sectionsIds = [];
+                for (section in this.sections) {
+                    if (this.sections[section].checked) {
+                        this.sectionsIds.push(this.sections[section].id.toString());
+                    }
+                }
+
+                if (this.sectionSize == this.sectionsIds.length) {
+                    this.allChecked = true;
+                } else {
+                    this.allChecked = false;
+                }
+            },
+            orderedSections(items) {
+                return items.filter(item => {
+                    if (item['description']) return item;
+                });
+            }
+        },
+        computed: {
+            sortedSections(){
+//                return _.orderBy(this.sections, 'description', 'asc');
+                return this.sections.sort((a, b) => a['description'] < b['description']);
+            }
+        }
+    });
+
+    const stocklist = new Vue({
+            el:'#stockList',
+            data:{
+                stock:[],
+                sections:[],
+                currentSort:'description',
+                currentSortDir:'asc',
+                pageSize:20,
+                currentPage:1,
+                stockSize:0,
+                pagesNumber:1
+            },
+            created:function() {
+                this.stock = <?= $this->stock; ?>;
+                this.sections = <?= $this->sections; ?>;
+                this.stockSize = this.stock.length;
+                this.pagesNumber = Math.ceil(this.stockSize / this.pageSize);
+            },
+            methods:{
+                sort:function(s) {
+                    if(s === this.currentSort) {
+                        this.currentSortDir = this.currentSortDir==='asc'?'desc':'asc';
+                    }
+                    this.currentSort = s;
+                },
+                firstPage:function() {
+                    this.currentPage = 1;
+                },
+                nextPage:function() {
+                    if((this.currentPage*this.pageSize) < this.stock.length) this.currentPage++;
+                },
+                prevPage:function() {
+                    if(this.currentPage > 1) this.currentPage--;
+                },
+                lastPage:function() {
+                    this.currentPage = Math.ceil(this.stockSize / this.pageSize);
+                },
+                changeLimit:function() {
+                    var e = document.getElementById("limit");
+                    this.pageSize = e.options[e.selectedIndex].value;
+                    this.pagesNumber = Math.ceil(this.stockSize / this.pageSize);
+                },
+            },
+            computed:{
+                sortedStock:function() {
+                    return this.stock.sort((a,b) => {
+                            let modifier = 1;
+                    if(this.currentSortDir === 'desc') modifier = -1;
+                    if(a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
+                    if(a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
+                    return 0;
+                }).filter((row, index) => {
+            let start = (this.currentPage-1)*this.pageSize;
+    let end = this.currentPage*this.pageSize;
+    if(index >= start && index < end) return true;
+    });
+    }
+    }
+    }
+    )
+</script>

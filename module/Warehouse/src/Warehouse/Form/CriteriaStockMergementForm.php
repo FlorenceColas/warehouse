@@ -11,9 +11,7 @@
 
 namespace Warehouse\Form;
 
-use Warehouse\Enum\EnumAvailability;
-use Warehouse\Enum\EnumStatus;
-use \Zend\Form\Form;
+use Zend\Form\Form;
 use Zend\InputFilter\InputFilterAwareInterface;
 
 class CriteriaStockMergementForm extends Form implements InputFilterAwareInterface
@@ -46,15 +44,15 @@ class CriteriaStockMergementForm extends Form implements InputFilterAwareInterfa
             [
                 'name' => 'availability',
                 'type' => 'Zend\Form\Element\Select',
-                'value' => EnumAvailability::All,
+                'value' => \Warehouse\Controller\StockmergementController::ALL,
                 'options' => [
        //             'label' => '',
                     'value_options' => [
-                        EnumAvailability::All => 'All',
-                        EnumAvailability::OnStock => 'On stock',
-                        EnumAvailability::NotOnStock => 'Not on stock',
-                        EnumAvailability::UnderInfoThreshold => 'Under Info Threshold',
-                        EnumAvailability::UnderCriticalThreshold => 'Under Critical Threshold',
+                        \Warehouse\Controller\StockmergementController::ALL => 'All',
+                        \Warehouse\Controller\StockmergementController::ON_STOCK => 'On stock',
+                        \Warehouse\Controller\StockmergementController::NOT_ON_STOCK => 'Not on stock',
+                        \Warehouse\Controller\StockmergementController::UNDER_INFO_THRESHOLD => 'Under Info Threshold',
+                        \Warehouse\Controller\StockmergementController::UNDER_CRITICAL_THRESHOLD => 'Under Critical Threshold',
                     ],
                 ]
             ]
@@ -79,14 +77,14 @@ class CriteriaStockMergementForm extends Form implements InputFilterAwareInterfa
                 'attributes' =>
                     [
                         'id' => 'status',
-                        'value' => EnumStatus::Enabled,
+                        'value' => \Warehouse\Controller\InventoryController::ENABLED,
                     ],
                 'options' =>
                     [
                        'value_options' =>
                             [
-                                EnumStatus::Enabled => ' Enabled',
-                                EnumStatus::Disabled => ' Disabled',
+                                \Warehouse\Controller\InventoryController::ENABLED  => ' Enabled',
+                                \Warehouse\Controller\InventoryController::DISABLED => ' Disabled',
                             ],
                     ],
             ]

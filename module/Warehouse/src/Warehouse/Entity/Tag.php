@@ -1,18 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 03/02/16
- * Version: 1.00
- * Tag: Entity corresponding to tag table
- * Properties:
- *      - id
- *      - description
- *      - recipe (recipe_id)
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -29,16 +15,16 @@ use Doctrine\ORM\Mapping as ORM;
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+     /**
+      * @ORM\ManyToOne(targetEntity="Recipe", inversedBy="tags")
+      * @ORM\JoinColumn(name="recipes_id", referencedColumnName="id")
+      */
+     private $recipe;
     /**
      * @ORM\Column(type="string")
      */
     protected $description;
-    /**
-     * @ORM\ManyToOne(targetEntity="Recipe", inversedBy="tags")
-     * @ORM\JoinColumn(name="recipe_id", referencedColumnName="id")
-     */
-    private $recipe;
-    
+
     /**
      * @return $id
      */

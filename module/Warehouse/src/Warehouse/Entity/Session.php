@@ -1,20 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 09/02/16
- * Version: 1.00
- * Session: Entity corresponding to session table
- * Properties:
- *      - id
- *      - userid
- *      - creationdate
- *      - updatedate
- *      - data
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM; // Pour utiliser les annotations
@@ -32,21 +16,21 @@ class Session
      */
     protected $id;
     /**
-     * @ORM\Column(type="integer")
-     */
-    protected  $userid;
-    /**
      * @ORM\Column(type="datetime")
      */
     protected $creationdate;
+    /**
+     * @ORM\Column(type="blob")
+     */
+    protected $data;
     /**
      * @ORM\Column(type="datetime")
      */
     protected $updatedate;
     /**
-     * @ORM\Column(type="blob")
+     * @ORM\Column(type="integer")
      */
-    protected $data;
+    protected  $userid;
 
     /**
      * @return $id

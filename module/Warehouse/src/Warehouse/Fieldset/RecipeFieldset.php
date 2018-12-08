@@ -1,17 +1,8 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 19/02/16
- * Version: 1.00
- * RecipeFieldset: Fieldset which contains the recipe form fields
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
 namespace Warehouse\Fieldset;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use Zend\Hydrator\ClassMethods as ClassMethodsHydrator;
 
 use Warehouse\Entity\Recipe;
 use Warehouse\Enum\EnumTableSettings;
@@ -25,7 +16,8 @@ class RecipeFieldset extends Fieldset implements InputFilterProviderInterface
     {
         parent::__construct('recipe');
 
-        $this->setHydrator(new DoctrineHydrator($objectManager,'Warehouse\Entity\Recipe',false));
+        $this->setHydrator(new ClassMethodsHydrator(false));
+//        $this->setHydrator(new DoctrineHydrator($objectManager,'Warehouse\Entity\Recipe',false));
 
         $this->setObject(new Recipe());
 
@@ -136,7 +128,7 @@ class RecipeFieldset extends Fieldset implements InputFilterProviderInterface
         ));
 
         //load RecipeCategory list
-        $category = $objectManager->getRepository('Warehouse\Entity\RecipeCategory')->findAllOrderByDescription(EnumTableSettings::RECIPE_CATEGORY);
+        $category = $objectManager->getRepository('Warehouse\Entity\Category')->findAllOrderByDescription(EnumTableSettings::RECIPE_CATEGORY);
         $options = array();
         foreach($category as $st) {
             $options[$st->getId()] = $st->getDescription();
@@ -175,20 +167,22 @@ class RecipeFieldset extends Fieldset implements InputFilterProviderInterface
             ),
             'preparationTime' => array(
                 'required' => true,
-                'filters' => array(
+/*                'filters' => array(
                     array('name' => 'StringTrim'),
                     array('name' => 'StripTags')
                 ),
+*/
                 'properties' => array(
                     'required' => true
                 )
             ),
             'totalTime' => array(
                 'required' => true,
-                'filters' => array(
+ /*               'filters' => array(
                     array('name' => 'StringTrim'),
                     array('name' => 'StripTags')
                 ),
+ */
                 'properties' => array(
                     'required' => true
                 )

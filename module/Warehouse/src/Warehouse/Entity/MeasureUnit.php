@@ -1,19 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 13/11/16
- * Version: 1.00
- * MeasureUnit: Entity corresponding to measureunit table
- * Properties:
- *      - id
- *      - description
- *      - unit
- *      - comparaison
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -30,22 +15,22 @@ use Doctrine\ORM\Mapping as ORM;
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    protected $description;
-    /**
-     * @ORM\Column(type="string", length=25)
-     */
-    protected $unit;
      /**
       * @ORM\Column(type="integer")
       */
-    protected $comparaison;
+     protected $comparaison;
+     /**
+     * @ORM\Column(type="string", length=50)
+     */
+     protected $description;
      /**
       * @ORM\Column(type="integer")
       */
      protected $useinstock;
+     /**
+      * @ORM\Column(type="string", length=25)
+      */
+     protected $unit;
 
      /**
       * @return mixed

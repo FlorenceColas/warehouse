@@ -1,21 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 22/01/2017
- * Version: 1.00
- * StockInterface: Entity corresponding to stock interface table
- * Properties:
- *      - id
- *      - description
- *      - stockmergement (merge_id)
- *      - stock (stock_id)
- *      - quantity
- *      - unit (unit_id)
- *      - sens
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -33,6 +16,21 @@ class StockInterface
      */
     protected $id;
     /**
+     * @ORM\ManyToOne(targetEntity="MeasureUnit")
+     * @ORM\JoinColumn(name="measureunit_id", referencedColumnName="id", nullable=false)
+     */
+    protected $measureunit;
+    /**
+     * @ORM\ManyToOne(targetEntity="Stock")
+     * @ORM\JoinColumn(name="stock_id", referencedColumnName="id", nullable=true)
+     */
+    protected $stock;
+    /**
+     * @ORM\ManyToOne(targetEntity="StockMergement")
+     * @ORM\JoinColumn(name="stockmergement_id", referencedColumnName="id", nullable=false)
+     */
+    protected $stockmergement;
+    /**
      * @ORM\Column(type="string", length=50, nullable = false)
      */
     protected $description;
@@ -48,26 +46,6 @@ class StockInterface
      * @ORM\Column(type="integer", nullable = false)
      */
     protected $sens;
-    /**
-     * @ORM\ManyToOne(targetEntity="MeasureUnit")
-     * @ORM\JoinColumn(name="unit_id", referencedColumnName="id", nullable=false)
-     */
-    protected $unit;
-    /**
-     * @ORM\ManyToOne(targetEntity="MeasureUnit")
-     * @ORM\JoinColumn(name="unittointegrate_id", referencedColumnName="id", nullable=false)
-     */
-    protected $unittointegrate;
-    /**
-     * @ORM\ManyToOne(targetEntity="StockMergement")
-     * @ORM\JoinColumn(name="merge_id", referencedColumnName="id", nullable=false)
-     */
-    protected $merge;
-    /**
-     * @ORM\ManyToOne(targetEntity="Stock")
-     * @ORM\JoinColumn(name="stock_id", referencedColumnName="id", nullable=true)
-     */
-    protected $stock;
 
     /**
      * @return mixed
@@ -136,33 +114,33 @@ class StockInterface
     /**
      * @return mixed
      */
-    public function getUnit()
+    public function getMeasureUnit()
     {
-        return $this->unit;
+        return $this->measureunit;
     }
 
     /**
-     * @param mixed $unit
+     * @param mixed $measureunit
      */
-    public function setUnit($unit)
+    public function setMeasureUnit($measureunit)
     {
-        $this->unit = $unit;
+        $this->measureunit = $measureunit;
     }
 
     /**
      * @return mixed
      */
-    public function getMerge()
+    public function getStockMergement()
     {
-        return $this->merge;
+        return $this->stockmergement;
     }
 
     /**
-     * @param mixed $merge
+     * @param mixed $stockmergement
      */
-    public function setMerge($merge)
+    public function setStockMergement($stockmergement)
     {
-        $this->merge = $merge;
+        $this->stockmergement = $stockmergement;
     }
 
     /**

@@ -1,16 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 03/02/16
- * Version: 1.00
- * Supplier: Entity corresponding to supplier table
- * Properties:
- *      - id
- *      - description
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;

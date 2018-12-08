@@ -1,0 +1,65 @@
+<?php /** @var \League\Plates\Template\Template $this */ ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><?=$recipe->getDescription();?></title>
+</head>
+<body>
+
+<table width="100%">
+    <tr>
+        <td width="40%" valign="middle" align="center">
+            <?php if (isset($photo)):?>
+                <img src="<?= $photo->getPath().'/'.$photo->getFileName();?>" width="300">
+            <?php endif;?>
+        </td>
+        <td width="10%">
+        </td>
+        <td width="50%">
+            <h1>
+                <?=$recipe->getDescription();?>
+            </h1>
+            <i>
+                <b>
+                    <?=sprintf('Category: %1$s - Serves: %2$d', $recipe->getCategory()->getDescription(), $recipe->getServes());?>
+                </b>
+                <br />
+                <b>
+                    <?=sprintf('Preparation time: %1$s - Total time: %2$s', $recipe->getPreparationTime(), $recipe->getTotalTime());?>
+                </b>
+                <br />
+                <h3>
+                    Ingredients:
+                </h3>
+                <?php foreach($recipe->getIngredients() as $ing):?>
+                    <?=sprintf('- %1$d %2$s %3$s - %4$s', $ing->getQuantity(), $ing->getMeasureUnit()->getDescription(), $ing->getStockmergement()->getDescription(), $ing->getDescription());?>
+                    <br />
+                <?php endforeach;?>
+            </i>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <h3>
+                Preparation:
+            </h3>
+            <?php foreach($recipe->getInstructions() as $inst):?>
+                <?=sprintf('%1$d - %2$s', $inst->getSequence(), $inst->getDescription());?>
+                <br />
+                <br />
+            <?php endforeach;?>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <h3>
+                Note / Suggestion:
+            </h3>
+            <?=$recipe->getNote();?>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

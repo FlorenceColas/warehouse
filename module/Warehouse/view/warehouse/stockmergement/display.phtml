@@ -46,10 +46,10 @@
     echo '<hr>';
     echo '<div name="stockqty" id="stockqty"><h4>Stock: ';
     if ($stock->getNetquantity() > 0) {
-        echo '<font color="green">'.$stock->getNetquantity().$stock->getUnit()->getUnit().'</font>';
+        echo '<font color="green">'.$stock->getNetquantity().$stock->getMeasureUnit()->getUnit().'</font>';
     }
     else {
-        echo '<font color="red">'.$stock->getNetquantity().$stock->getUnit()->getUnit().'</font>';
+        echo '<font color="red">'.$stock->getNetquantity().$stock->getMeasureUnit()->getUnit().'</font>';
     }
     echo '</h4></div>';
     echo '<button id="recalculate" name="recalculate">Recalculate</button>';

@@ -20,10 +20,9 @@ use Doctrine\ORM\EntityManager;
 use Warehouse\Entity\Appsettings;
 use Warehouse\Entity\Area;
 use Warehouse\Entity\MeasureUnit;
-use Warehouse\Entity\RecipeCategory;
+use Warehouse\Entity\Category;
 use Warehouse\Entity\Section;
 use Warehouse\Entity\Supplier;
-use Warehouse\Enum\EnumAvailability;
 use Warehouse\Enum\EnumComparaison;
 use Warehouse\Enum\EnumTableSettings;
 use Warehouse\Form\SettingsForm;
@@ -243,7 +242,7 @@ class SettingsController extends AbstractActionController
                             $setting = new Supplier();
                             break;
                         case EnumTableSettings::RECIPE_CATEGORY:
-                            $setting = new RecipeCategory();
+                            $setting = new Category();
                             break;
                         case EnumTableSettings::APPSETTINGS:
                             $setting = new Appsettings();

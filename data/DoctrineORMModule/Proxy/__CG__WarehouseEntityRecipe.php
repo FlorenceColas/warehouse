@@ -64,10 +64,10 @@ class Recipe extends \Warehouse\Entity\Recipe implements \Doctrine\ORM\Proxy\Pro
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'description', 'serves', 'preparationTime', 'totalTime', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'ingredients', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'instructions', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'tags', 'note', 'category', 'recipeattachments'];
+            return ['__isInitialized__', 'id', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'ingredients', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'instructions', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'attachment', 'category', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'tags', 'description', 'note', 'preparationTime', 'serves', 'totalTime'];
         }
 
-        return ['__isInitialized__', 'id', 'description', 'serves', 'preparationTime', 'totalTime', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'ingredients', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'instructions', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'tags', 'note', 'category', 'recipeattachments'];
+        return ['__isInitialized__', 'id', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'ingredients', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'instructions', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'attachment', 'category', '' . "\0" . 'Warehouse\\Entity\\Recipe' . "\0" . 'tags', 'description', 'note', 'preparationTime', 'serves', 'totalTime'];
     }
 
     /**
@@ -422,34 +422,34 @@ class Recipe extends \Warehouse\Entity\Recipe implements \Doctrine\ORM\Proxy\Pro
     /**
      * {@inheritDoc}
      */
-    public function addRecipeAttachment(\Warehouse\Entity\RecipeAttachment $recipeattachment)
+    public function addAttachment(\Warehouse\Entity\Attachment $attachment)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addRecipeAttachment', [$recipeattachment]);
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addAttachment', [$attachment]);
 
-        return parent::addRecipeAttachment($recipeattachment);
+        return parent::addAttachment($attachment);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function removeRecipeAttachment(\Warehouse\Entity\Attachment $recipeattachment)
+    public function removeAttachment($attachment)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeRecipeAttachment', [$recipeattachment]);
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeAttachment', [$attachment]);
 
-        return parent::removeRecipeAttachment($recipeattachment);
+        return parent::removeAttachment($attachment);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getRecipeAttachment()
+    public function getAttachment()
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getRecipeAttachment', []);
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAttachment', []);
 
-        return parent::getRecipeAttachment();
+        return parent::getAttachment();
     }
 
 }

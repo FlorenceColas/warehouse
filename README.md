@@ -47,3 +47,105 @@ When you create your own version, don't forget to send us a nice screenshot, or 
 
 This project is under MIT License. 
 
+## PDF generator
+wkhtmltopdf. based on QT which is very powerful to generate PDF.
+install from
+[https://wkhtmltopdf.org/downloads.html](https://wkhtmltopdf.org/downloads.html)
+
+create a config entry ['path']['wkhtmltopdf'] with the path of the installation
+i.e on mac
+```
+return [
+    'path' => [
+        'wkhtmltopdf' => '/usr/local/bin/wkhtmltopdf',
+    ],
+```
+
+In the module "Common", there are the classes requires to use the pdf adapter/renderer, with its own configuration file.
+```
+return [
+    'service_manager' => [
+        'factories' => [
+            PdfAdapter::class  => PdfAdapterFactory::class,
+            PdfRenderer::class => PdfRendererFactory::class,
+        ],
+    ],
+];
+```
+
+Paths to the templates, in global.php:
+to store the pdf file and the temporary folder to generate the html to convert
+```
+return [
+    'path' => [
+        'recipe_public_pdf'          => APPLICATION_PATH . '/public/recipes',
+        'tmp'                        => APPLICATION_PATH . '/data/tmp',
+    ],
+],
+```
+
+Path to the html templates, in module.config.php:
+```
+return [
+    'templates'       => [
+        'extension' => 'phtml',
+        'paths'     => [
+            'recipe' => [__DIR__ . '/../templates/recipe'],
+        ],
+    ],
+];
+```
+
+Config fot the template renderer class, in module.config.php:
+```
+return [
+    'service_manager' => [
+        'factories' => [
+            TemplateRendererInterface::class => PlatesRendererFactory::class,
+        ],
+    ],
+```
+
+To use it:
+The controller need dependances injections for:
+Factory:
+```
+use Zend\Expressive\Template\TemplateRendererInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
+
+class MyControllerFactory implements FactoryInterface
+{
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        $templateRenderer = $container->get(TemplateRendererInterface::class);
+        $pdfAdapter       = $container->get(PdfAdapter::class);
+        ...
+    }
+}
+```
+
+In the MyController.php:
+```
+// read the needed data
+$this->data = [
+    'id' => 123,
+    'description' => 'my recipe',
+];
+
+// generate the html
+$html = $this->templateRenderer
+    ->render(
+        'template_path::template_name', [
+        'data' => $this->data,
+    ]);
+
+// generate the pdf content
+$this->data = $this->pdfAdapter
+    ->setContent($html, $this->config['path']['tmp'])
+    ->render();
+
+// create the pdf file
+$file = $this->config['path']['recipe_public_pdf'] . '/' . 'recipe.pdf';
+$result = file_put_contents($file, $this->data);
+
+ ```

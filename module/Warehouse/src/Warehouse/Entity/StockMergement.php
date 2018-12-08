@@ -1,26 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 22/01/2017
- * Version: 1.00
- * StockMergement: Entity corresponding to stock mergement table
- * Properties:
- *      - id
- *      - description
- *      - netquantity
- *      - unit (measureunit_id)
- *      - eqtblsp
- *      - eqcofsp
- *      - eqteasp
- *      - eqpinch
- *      - eqpiece
- *      - section
- *      - area
- *      - supplier
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -38,22 +16,29 @@ class StockMergement
      */
     protected $id;
     /**
+     * @ORM\ManyToOne(targetEntity="Area")
+     * @ORM\JoinColumn(name="area_id", referencedColumnName="id", nullable=false)
+     */
+    protected $area;
+    /**
+     * @ORM\ManyToOne(targetEntity="Section")
+     * @ORM\JoinColumn(name="section_id", referencedColumnName="id", nullable=false)
+     */
+    protected $section;
+    /**
+     * @ORM\ManyToOne(targetEntity="Supplier")
+     * @ORM\JoinColumn(name="supplier_id", referencedColumnName="id",nullable=false)
+     */
+    protected $supplier;
+    /**
+     * @ORM\ManyToOne(targetEntity="MeasureUnit")
+     * @ORM\JoinColumn(name="measureunit_id", referencedColumnName="id", nullable=false)
+     */
+    protected $measureunit;
+    /**
      * @ORM\Column(type="string", length=50, nullable = false)
      */
     protected $description;
-    /**
-     * @ORM\Column(type="decimal", precision=6, scale=1, nullable = false)
-     */
-    protected $netquantity;
-    /**
-     * @ORM\ManyToOne(targetEntity="MeasureUnit")
-     * @ORM\JoinColumn(name="unit_id", referencedColumnName="id", nullable=false)
-     */
-    protected $unit;
-    /**
-     * @ORM\Column(type="decimal", precision=6, scale=1, nullable = true)
-     */
-    protected $eqtblsp;
     /**
      * @ORM\Column(type="decimal", precision=6, scale=1, nullable = true)
      */
@@ -61,7 +46,7 @@ class StockMergement
     /**
      * @ORM\Column(type="decimal", precision=6, scale=1, nullable = true)
      */
-    protected $eqteasp;
+    protected $eqpiece;
     /**
      * @ORM\Column(type="decimal", precision=6, scale=1, nullable = true)
      */
@@ -69,25 +54,15 @@ class StockMergement
     /**
      * @ORM\Column(type="decimal", precision=6, scale=1, nullable = true)
      */
-    protected $eqpiece;
+    protected $eqtblsp;
     /**
-     * @ORM\ManyToOne(targetEntity="Section")
-     * @ORM\JoinColumn(name="section_id", referencedColumnName="id", nullable=false)
-     * @var Section
+     * @ORM\Column(type="decimal", precision=6, scale=1, nullable = true)
      */
-    protected $section;
+    protected $eqteasp;
     /**
-     * @ORM\ManyToOne(targetEntity="Area")
-     * @ORM\JoinColumn(name="area_id", referencedColumnName="id", nullable=false)
-     * @var Area
+     * @ORM\Column(type="decimal", precision=6, scale=1, nullable = false)
      */
-    protected $area;
-    /**
-     * @ORM\ManyToOne(targetEntity="Supplier")
-     * @ORM\JoinColumn(name="supplier_id", referencedColumnName="id",nullable=false)
-     * @var Supplier
-     */
-    protected $supplier;
+    protected $netquantity;
 
     /**
      * @return mixed
@@ -138,19 +113,19 @@ class StockMergement
     }
 
     /**
-     * @return mixed
+     * @return MeasureUnit
      */
-    public function getUnit()
+    public function getMeasureUnit()
     {
-        return $this->unit;
+        return $this->measureunit;
     }
 
     /**
      * @param mixed $unit
      */
-    public function setUnit($unit)
+    public function setMeasureUnit($measureunit)
     {
-        $this->unit = $unit;
+        $this->measureunit = $measureunit;
     }
 
     /**
@@ -280,5 +255,4 @@ class StockMergement
     {
         $this->supplier = $supplier;
     }
-
 }

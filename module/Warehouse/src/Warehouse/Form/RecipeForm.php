@@ -1,14 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 18/02/16
- * Version: 1.00
- * RecipeForm: Recipe Form
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
-
 namespace Warehouse\Form;
 
 use Doctrine\Common\Persistence\ObjectManager;

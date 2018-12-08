@@ -32,59 +32,73 @@
 </script>
 
 <h1>Update Stock</h1>
+
 <?php
-$myStock = $this->stock;
-$form = $this->form;
-$form->prepare();
-echo $this->form()->openTag($form);
-echo '<div><p>Description: '.$this->formTextarea($this->form->get('stockmergement')->get('description')).'</p>';
-echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('description'), array('class' => 'custom_form_errors')).'</div>';
-echo '<p>Measure Unit: '. $this->formElement($this->form->get('stockmergement')->get('unit_id')). '</p>';
-echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('unit_id'), array('class' => 'custom_form_errors')).'</div>';
-echo '<hr>';
+    $myStock = $this->stock;
+    $form = $this->form;
+    $form->prepare();
+    echo $this->form()->openTag($form);
+?>
 
-echo '<h4>Equivalences:</h4>';
-echo '<table border="1" border-style="solid" border-color="black" width="50%" cellspacing=4 cellpadding=4>' ;
-echo '<tr>';
-echo '<th>Tablespoon</th>';
-echo '<th>Coffeespoon</th>';
-echo '<th>Teaspoon</th>';
-echo '<th>Pinch</th>';
-echo '<th>Piece</th>';
-echo '</tr>';
-echo '<tr>';
-echo '<td>'. $this->formElement($this->form->get('stockmergement')->get('eqtblsp'));
-echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('eqtblsp'), array('class' => 'custom_form_errors')).'</div>';
-echo '</td>';
-echo '<td>'. $this->formElement($this->form->get('stockmergement')->get('eqcofsp'));
-echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('eqcofsp'), array('class' => 'custom_form_errors')).'</div>';
-echo '</td>';
-echo '<td>'. $this->formElement($this->form->get('stockmergement')->get('eqteasp'));
-echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('eqteasp'), array('class' => 'custom_form_errors')).'</div>';
-echo '</td>';
-echo '<td>'. $this->formElement($this->form->get('stockmergement')->get('eqpinch'));
-echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('eqpinch'), array('class' => 'custom_form_errors')).'</div>';
-echo '</td>';
-echo '<td>'. $this->formElement($this->form->get('stockmergement')->get('eqpiece'));
-echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('eqpiece'), array('class' => 'custom_form_errors')).'</div>';
-echo '</td>';
-echo '</tr>';
-echo '</table>';
+<p>Description: <?= $this->formTextarea($this->form->get('stockmergement')->get('description'));?></p>
+<div><?=$this->formElementErrors($form->get('stockmergement')->get('description'), ['class' => 'custom_form_errors']);?></div>
+<p>Measure Unit: <?=$this->formElement($this->form->get('stockmergement')->get('measureunit_id'));?></p>
+<div><?=$this->formElementErrors($form->get('stockmergement')->get('measureunit_id'), ['class' => 'custom_form_errors']);?></div>
+<hr>
 
-echo '<hr>';
+<h4>Equivalences:</h4>
+<table border="1" border-style="solid" border-color="black" width="50%" cellspacing=4 cellpadding=4>
+    <tr>
+        <th>Tablespoon</th>
+        <th>Coffeespoon</th>
+        <th>Teaspoon</th>
+        <th>Pinch</th>
+        <th>Piece</th>
+    </tr>
+    <tr>
+        <td>
+            <?=$this->formElement($this->form->get('stockmergement')->get('eqtblsp'));?>
+            <div><?=$this->formElementErrors($form->get('stockmergement')->get('eqtblsp'), ['class' => 'custom_form_errors']);?></div>
+        </td>
+        <td>
+            <?=$this->formElement($this->form->get('stockmergement')->get('eqcofsp'));?>
+            <div><?=$this->formElementErrors($form->get('stockmergement')->get('eqcofsp'), ['class' => 'custom_form_errors']);?></div>
+        </td>
+        <td>
+            <?=$this->formElement($this->form->get('stockmergement')->get('eqteasp'));?>
+            <div><?=$this->formElementErrors($form->get('stockmergement')->get('eqteasp'), ['class' => 'custom_form_errors']);?></div>
+        </td>
+        <td>
+            <?=$this->formElement($this->form->get('stockmergement')->get('eqpinch'));?>
+            <div><?=$this->formElementErrors($form->get('stockmergement')->get('eqpinch'), ['class' => 'custom_form_errors']);?></div>
+        </td>
+        <td>
+            <?=$this->formElement($this->form->get('stockmergement')->get('eqpiece'));?>
+            <div><?=$this->formElementErrors($form->get('stockmergement')->get('eqpiece'), ['class' => 'custom_form_errors']);?></div>
+        </td>
+    </tr>
+</table>
 
-echo '<p>Area: '. $this->formElement($this->form->get('stockmergement')->get('area_id')). '</p>';
-echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('area_id'), array('class' => 'custom_form_errors')).'</div>';
-echo '<div name="section" id="section"><p>Section: '. $this->formElement($this->form->get('stockmergement')->get('section_id'));
-echo '</p></div>';
-echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('section_id'), array('class' => 'custom_form_errors')).'</div>';
-echo '<p>Supplier: '. $this->formElement($this->form->get('stockmergement')->get('supplier_id')). '</p>';
-echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('supplier_id'), array('class' => 'custom_form_errors')).'</div>';
+<hr>
 
-echo '<hr>';
+<p>Area: <?=$this->formElement($this->form->get('stockmergement')->get('area_id'));?></p>
+<div><?=$this->formElementErrors($form->get('stockmergement')->get('area_id'), ['class' => 'custom_form_errors']);?></div>
+<div name="section" id="section">
+    <p>
+        Section: <?=$this->formElement($this->form->get('stockmergement')->get('section_id'));?>
+    </p>
+</div>
+<div><?=$this->formElementErrors($form->get('stockmergement')->get('section_id'), ['class' => 'custom_form_errors']);?></div>
+<p>
+    Supplier: <?=$this->formElement($this->form->get('stockmergement')->get('supplier_id'));?>
+</p>
+<div><?=$this->formElementErrors($form->get('stockmergement')->get('supplier_id'), ['class' => 'custom_form_errors']);?></div>
 
-echo $this->formInput($form->get('backToList'));
-echo ' '.$this->formInput($form->get('update'));
-echo ' '.$this->formInput($form->get('cancel'));
-echo $this->form()->closeTag();
+<hr>
+
+<?php
+    echo $this->formInput($form->get('backToList'));
+    echo ' '.$this->formInput($form->get('update'));
+    echo ' '.$this->formInput($form->get('cancel'));
+    echo $this->form()->closeTag();
 ?>

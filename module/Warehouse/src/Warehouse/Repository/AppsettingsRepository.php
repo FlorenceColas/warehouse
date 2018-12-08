@@ -22,17 +22,21 @@ class AppsettingsRepository extends EntityRepository
     /**
      * Return the value of the reference in parameter
      * @param string $reference
-     * @return string
+     * @return array
      */
     public function findByReference($reference) {
-        $em = $this->getEntityManager();
+        $result = $this->findBy(array('settingreference' => $reference));
+        return $result;
+
+/*        $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('a')
             ->from('\Warehouse\Entity\Appsettings', 'a')
             ->where('a.settingreference=\''.$reference.'\'');
-        $query = $qb->getQuery();
+        $query = $qb->getQuery()->getResult();
 
         return $query;
+*/
     }
 
     /**

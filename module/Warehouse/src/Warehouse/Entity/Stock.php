@@ -1,30 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 03/02/16
- * Version: 1.00
- * Stock: Entity corresponding to stock table
- * Properties:
- *      - id
- *      - barcode
- *      - description
- *      - quantity
- *      - infothreshold
- *      - criticalthreshold
- *      - supplierreference
- *      - section (section_id)
- *      - area (area_id)
- *      - supplier (supplier_id)
- *      - priority
- *      - status
- *      - attachments (collection of attachment)
- *      - notes
- *      - merge (stockmergement_id)
- *      - netquantity
- *      - unit (measureunit_id)
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- */
 namespace Warehouse\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -43,9 +17,31 @@ class Stock
      */
     protected $id;
     /**
+     * @ORM\ManyToMany(targetEntity="Attachment")
+     * @ORM\JoinTable(name="stock_attachment",
+     *      joinColumns={@ORM\JoinColumn (name="stock_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="attachment_id", referencedColumnName="id")}
+     *      )
+     **/
+    protected $attachments;
+    /**
+     * @ORM\ManyToOne(targetEntity="StockMergement")
+     * @ORM\JoinColumn(name="stockmergement_id", referencedColumnName="id", nullable=true)
+     */
+    protected $stockmergement;
+    /**
+     * @ORM\OneToMany(targetEntity="StockMovement", mappedBy="stock", cascade={"persist","remove"})
+     * @var ArrayCollection StockMovement[]
+     **/
+    protected $stockmovement;
+    /**
      * @ORM\Column(type="decimal", precision=18, scale=0)
      */
     protected $barcode;
+    /**
+     * @ORM\Column(type="decimal", precision=8, scale=1)
+     */
+    protected $criticalthreshold;
     /**
      * @ORM\Column(type="string", length=50)
      */
@@ -53,46 +49,23 @@ class Stock
     /**
      * @ORM\Column(type="decimal", precision=8, scale=1)
      */
-    protected $quantity;
-    /**
-     * @ORM\Column(type="decimal", precision=8, scale=1)
-     */
     protected $infothreshold;
-    /**
-     * @ORM\Column(type="decimal", precision=8, scale=1)
-     */
-    protected $criticalthreshold;
-    /**
-     * @ORM\Column(type="string", length=15, nullable=true)
-     */
-    protected $supplierreference;
-    /**
-     * @ORM\Column(type="integer")
-     */
-    protected $status;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Attachment", mappedBy="stock", cascade={"persist","remove"})
-     * @var ArrayCollection Attachment[]
-     **/
-    protected $attachments;
-
-    /**
-     * @ORM\OneToMany(targetEntity="StockMovement", mappedBy="stock", cascade={"persist","remove"})
-     * @var ArrayCollection StockMovement[]
-     **/
-    protected $stockmovement;
-
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
      */
     protected $notes;
-
     /**
-     * @ORM\ManyToOne(targetEntity="StockMergement")
-     * @ORM\JoinColumn(name="merge_id", referencedColumnName="id", nullable=true)
+     * @ORM\Column(type="decimal", precision=8, scale=1)
      */
-    protected $merge;
+    protected $quantity;
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $status;
+    /**
+     * @ORM\Column(type="string", length=15, nullable=true)
+     */
+    protected $supplierreference;
 
     /**
      * @ORM\Column(type="integer", nullable=false)
@@ -323,17 +296,17 @@ class Stock
     /**
      * @return mixed
      */
-    public function getMerge()
+    public function getStockMergement()
     {
-        return $this->merge;
+        return $this->stockmergement;
     }
 
     /**
-     * @param mixed $merge
+     * @param mixed $stockmergement
      */
-    public function setMerge($merge)
+    public function setStockMergement($stockmergement)
     {
-        $this->merge = $merge;
+        $this->stockmergement = $stockmergement;
     }
 
     /**

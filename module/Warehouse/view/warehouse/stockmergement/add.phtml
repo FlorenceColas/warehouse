@@ -42,8 +42,9 @@ $form->prepare();
 echo $this->form()->openTag($form);
 echo '<div><p>Description: '.$this->formTextarea($this->form->get('stockmergement')->get('description')).'</p>';
 echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('description'), array('class' => 'custom_form_errors')).'</div>';
-echo '<p>Measure Unit: '. $this->formElement($this->form->get('stockmergement')->get('unit_id')). '</p>';
-echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('unit_id'), array('class' => 'custom_form_errors')).'</div>';
+echo '<p>Measure Unit: '. $this->formElement($this->form->get('stockmergement')->get('measureunit_id')). '</p>';
+echo '<div>'.$this->formElementErrors($form->get('stockmergement')->get('measureunit_id'), array('class' => 'custom_form_errors')).'</div>';
+echo '<hr>';
 echo '<hr>';
 
 echo '<h4>Equivalences:</h4>';

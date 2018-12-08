@@ -1,0 +1,10 @@
+<?php
+namespace AuditTrail;
+
+return [
+    'db' => [
+        'hostname'       => 'hostname:port',
+        'password'       => 'password',
+        'user'           => 'user',
+    ],
+];

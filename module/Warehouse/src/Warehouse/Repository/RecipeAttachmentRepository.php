@@ -43,11 +43,22 @@ class RecipeAttachmentRepository extends EntityRepository
     /**
      * Return the attachment for defaultphoto corresponding to the recipe id in parameter
      * @param String $recipeid
-     * @return RecipeAttachment
+     * @return Attachment
      */
     public function findByRecipeIdDefaultPhoto($recipeid) {
-        $result = $this->findBy(array('recipe' => $recipeid, 'defaultphoto' => '1'));
-        return $result;
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+
+        $qb->select('a')
+            ->from('\Warehouse\Entity\Attachment', 'a')
+            ->leftJoin('\Warehouse\Entity\RecipeAttachment', 'ra', \Doctrine\ORM\Query\Expr\Join::WITH, 'a.id = ra.attachment_id')
+            ->where('ra.recipes_id = ' . $recipeid)
+            ->andWhere('a.defaultphoto = 1');
+
+        $query = $qb->getQuery()->getResult();
+
+        return $query;
+
     }
 
     /**
@@ -60,8 +71,9 @@ class RecipeAttachmentRepository extends EntityRepository
         $qb = $em->createQueryBuilder();
 
         $qb->select('a')
-            ->from('\Warehouse\Entity\RecipeAttachment', 'a')
-            ->where('a.recipe='.$id);
+            ->from('\Warehouse\Entity\RecipeAttachment', 'ra')
+            ->leftJoin('\Warehouse\Entity\Attachment', 'a', \Doctrine\ORM\Query\Expr\Join::WITH, 'a.id = ra.attachment_id')
+            ->where('ra.recipes_id='.$id);
         $query = $qb->getQuery()->getResult();
 
         return $query;

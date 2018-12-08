@@ -1,31 +1,16 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 20/02/16
- * Version: 1.00
- * StockMergementFieldset: Fieldset which contains the stock mergement form fields
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
 
 namespace Warehouse\Fieldset;
 
-use Warehouse\Entity\StockMergement;
-use Warehouse\Enum\EnumStatus;
-use Warehouse\Enum\EnumTableSettings;
-use Zend\Form\Fieldset;
-use Zend\InputFilter\InputFilterProviderInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
-use Zend\Form\Element\Collection;
+use Warehouse\Entity\StockMergement;
 use Zend\Form\Element;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Form\Fieldset;
+use Zend\Hydrator\ClassMethods as ClassMethodsHydrator;
+use Zend\InputFilter\InputFilterProviderInterface;
 
-class StockMergementFieldset extends Fieldset implements InputFilterProviderInterface, ServiceLocatorAwareInterface
+class StockMergementFieldset extends Fieldset implements InputFilterProviderInterface
 {
-    protected $serviceLocator;
     protected $objectManager;
 
     public function __construct(ObjectManager $objectManager)
@@ -34,7 +19,7 @@ class StockMergementFieldset extends Fieldset implements InputFilterProviderInte
 
         $this->objectManager = $objectManager;
 
-        $this->setHydrator(new DoctrineHydrator($this->objectManager,'Warehouse\Entity\StockMergement',false));
+        $this->setHydrator(new ClassMethodsHydrator(false));
         $this->setObject(new StockMergement());
 
         $this->setLabel('Stock Mergement');
@@ -44,165 +29,169 @@ class StockMergementFieldset extends Fieldset implements InputFilterProviderInte
 
     public function init(){
         $this->add([
+            'name' => 'id',
             'type' => 'Zend\Form\Element\Hidden',
-            'name' => 'id'
         ]);
 
-        $this->add(array(
-            'type'    => 'Zend\Form\Element\TextArea',
-            'name'    => 'description',
-            'options' => array(
-                'label' => ''
-            ),
+        $this->add([
             'attributes' => [
-                'cols' => 90,
-                'rows' => 1,
-                'maxlength' => 255
-            ]
-        ));
-
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Number',
-            'name' => 'netquantity',
-            'options' => array(
-                'label' => ''
-            ),
-            'attributes' => array(
-                'min' => '0',
-                'max' => '100000',
-                'step' => '1', // default step interval is 1
-            )
-        ));
-
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'unit_id',
-            'options' => array(
+                'cols'      => 90,
+                'maxlength' => 255,
+                'rows'      => 1,
+            ],
+            'name'       => 'description',
+            'options'    => [
                 'label' => '',
-                'empty_option' => 'Please choose the unit'
-            ),
-        ));
+            ],
+            'type'       => 'Zend\Form\Element\TextArea',
+        ]);
 
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'section_id',
-            'options' => array(
+        $this->add([
+            'attributes' => [
+                'max'  => '999999',
+                'min'  => '0',
+                'step' => '0.1',
+            ],
+            'name'       => 'netquantity',
+            'options'    => [
                 'label' => '',
-                'empty_option' => 'Please choose the section'
-            ),
-        ));
+            ],
+            'type'       => 'Zend\Form\Element\Number',
+        ]);
 
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'area_id',
-            'options' => array(
-                'label' => '',
+        $this->add([
+            'name'    => 'measureunit_id',
+            'options' => [
+                'empty_option' => 'Please choose the unit',
+                'label'        => '',
+            ],
+            'type'    => 'Zend\Form\Element\Select',
+        ]);
+
+        $this->add([
+            'name'    => 'section_id',
+            'options' => [
+                'empty_option' => 'Please choose the section',
+                'label'        => '',
+            ],
+            'type'    => 'Zend\Form\Element\Select',
+        ]);
+
+        $this->add([
+            'name'    => 'area_id',
+            'options' => [
                 'empty_option' => 'Please choose the area',
-            ),
-        ));
+                'label'        => '',
+            ],
+            'type'    => 'Zend\Form\Element\Select',
+        ]);
 
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'supplier_id',
-            'options' => array(
+        $this->add([
+            'name'    => 'supplier_id',
+            'options' => [
+                'empty_option' => 'Please choose the supplier',
+                'label'        => '',
+            ],
+            'type'    => 'Zend\Form\Element\Select',
+        ]);
+
+        $this->add([
+            'attributes' => [
+                'max'  => '999999',
+                'min'  => '0',
+                'step' => '0.1',
+            ],
+            'name'       => 'eqtblsp',
+            'options'    => [
                 'label' => '',
-                'empty_option' => 'Please choose the supplier'
-            ),
-        ));
+            ],
+            'type'       => 'Zend\Form\Element\Number',
+        ]);
 
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Number',
-            'name' => 'eqtblsp',
-            'options' => array(
+        $this->add([
+            'attributes' => [
+                'max'  => '999999',
+                'min'  => '0',
+                'step' => '0.1',
+            ],
+            'name'       => 'eqcofsp',
+            'options'    => [
+                'label' => '',
+            ],
+            'type'       => 'Zend\Form\Element\Number',
+        ]);
+
+        $this->add([
+            'attributes' => [
+                'max'  => '999999',
+                'min'  => '0',
+                'step' => '0.1',
+            ],
+            'name'       => 'eqteasp',
+            'options'    => [
+                'label' => '',
+            ],
+            'type'       => 'Zend\Form\Element\Number',
+        ]);
+
+        $this->add([
+            'attributes' => [
+                'max'  => '999999',
+                'min'  => '0',
+                'step' => '0.1',
+            ],
+            'name'       => 'eqpinch',
+            'options'    => [
+                'label' => '',
+            ],
+            'type'       => 'Zend\Form\Element\Number',
+        ]);
+
+        $this->add([
+            'attributes' => [
+                'max'  => '999999',
+                'min'  => '0',
+                'step' => '0.1',
+            ],
+            'name'       => 'eqpiece',
+            'options'    => [
                 'label' => ''
-            ),
-            'attributes' => array(
-                'min' => '0',
-                'max' => '1000',
-                'step' => '1', // default step interval is 1
-            )
-        ));
-
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Number',
-            'name' => 'eqcofsp',
-            'options' => array(
-                'label' => ''
-            ),
-            'attributes' => array(
-                'min' => '0',
-                'max' => '1000',
-                'step' => '1', // default step interval is 1
-            )
-        ));
-
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Number',
-            'name' => 'eqteasp',
-            'options' => array(
-                'label' => ''
-            ),
-            'attributes' => array(
-                'min' => '0',
-                'max' => '1000',
-                'step' => '1', // default step interval is 1
-            )
-        ));
-
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Number',
-            'name' => 'eqpinch',
-            'options' => array(
-                'label' => ''
-            ),
-            'attributes' => array(
-                'min' => '0',
-                'max' => '1000',
-                'step' => '1', // default step interval is 1
-            )
-        ));
-
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Number',
-            'name' => 'eqpiece',
-            'options' => array(
-                'label' => ''
-            ),
-            'attributes' => array(
-                'min' => '0',
-                'max' => '1000',
-                'step' => '1', // default step interval is 1
-            )
-        ));
-
-    }
-
-    public function setServiceLocator(ServiceLocatorInterface $sl)
-    {
-        $this->serviceLocator = $sl;
-    }
-
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
+            ],
+            'type'       => 'Zend\Form\Element\Number',
+        ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'unit_id' => array(
+        return [
+            'area_id' => [
                 'required' => true,
-            ),
-            'description' => array(
-                'required' => true,
-                'filters' => array(
-                    array('name' => 'StringTrim'),
-                    array('name' => 'StripTags')
-                ),
-                'properties' => array(
+            ],
+            'description' => [
+                'filters' => [
+                    ['name' => 'StringTrim'],
+                    ['name' => 'StripTags'],
+                ],
+                'properties' => [
                     'required' => true
-                )
-            ),
+                ],
+                'required' => true,
+            ],
+            'eqcofsp' => [
+                'required' => false,
+            ],
+            'eqpiece' => [
+                'required' => false,
+            ],
+            'eqpinch' => [
+                'required' => false,
+            ],
+            'eqtblsp' => [
+                'required' => false,
+            ],
+            'eqteasp' => [
+                'required' => false,
+            ],
             'netquantity' => [
                 'required' => false,
             ],
@@ -212,21 +201,9 @@ class StockMergementFieldset extends Fieldset implements InputFilterProviderInte
             'supplier_id' => [
                 'required' => true,
             ],
-            'eqtblsp' => [
-                'required' => false,
+            'measureunit_id' => [
+                'required' => true,
             ],
-            'eqcofsp' => [
-                'required' => false,
-            ],
-            'eqteasp' => [
-                'required' => false,
-            ],
-            'eqpinch' => [
-                'required' => false,
-            ],
-            'eqpiece' => [
-                'required' => false,
-            ],
-        );
+        ];
     }
 }

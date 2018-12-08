@@ -1,18 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 15/11/16
- * Version: 1.00
- * AttachmentRepository: Repository for attachement table. It contains the following functions:
- *      - findByAttachmentId: return the attachment corresponding to the attachment id in parameter
- *      - findByAttachmentName: return the attachment corresponding to the filename in parameter
- *      - findByStockIdDefaultPhoto: return the attachment for defaultphoto corresponding to the stock id in parameter
- *      - findByStockId: return a list of attachments corresponding to the stock id in parameter
- *      - findAllOrderByDescription: return all attachments order by description
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
 
 namespace Warehouse\Repository;
 
@@ -42,11 +28,11 @@ class AttachmentRepository extends EntityRepository
 
     /**
      * Return the attachment for defaultphoto corresponding to the stock id in parameter
-     * @param String $stockid
+     * @param int $id
      * @return Attachment
      */
-    public function findByStockIdDefaultPhoto($stockid) {
-        $result = $this->findBy(array('stock' => $stockid, 'defaultphoto' => '1'));
+    public function findByIdDefaultPhoto($id) {
+        $result = $this->findBy(array('id' => $id, 'defaultphoto' => '1'));
         return $result;
     }
 

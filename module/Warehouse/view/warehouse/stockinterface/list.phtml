@@ -30,7 +30,7 @@
                 </td>
                 <td><div class="col-md-10">
                         <?php
-                        if ($sl->getSens() == \Warehouse\Enum\EnumStockMovementType::MOVEMENT_SHOP_ADD)
+                        if ($sl->getSens() == \Warehouse\Controller\ShoppingController::MOVEMENT_SHOP_ADD)
                             echo '<img class="plus" style="max-height: 18px; width: auto;" src="../../../../img/plus.png" id="'.$sl->getId().'" alt=""/>';
                         else
                             echo '<img class="minus" style="max-height: 18px; width: auto;" src="../../../../img/minus.png" id="'.$sl->getId().'" alt=""/>';
@@ -42,7 +42,7 @@
                         <select class="unit" name="<?php echo $sl->getId(); ?>" id="<?php echo $sl->getId(); ?>">
                             <?php
                             foreach ($units as $unit) {
-                                if ($sl->getUnit()->getId() === $unit->getId()) {
+                                if ($sl->getMeasureUnit()->getId() === $unit->getId()) {
                                     echo '<option value="' . $unit->getId() . '" selected>' . $unit->getDescription() . '</option>';
                                 }else {
                                     echo '<option value="' . $unit->getId() . '">' . $unit->getDescription() . '</option>';
@@ -58,7 +58,7 @@
                         <select class="unittointegrate" name="<?php echo $sl->getId(); ?>" id="<?php echo $sl->getId(); ?>">
                             <?php
                             foreach ($units as $unit) {
-                                if ($sl->getUnittointegrate()->getId() === $unit->getId()) {
+                                if ($sl->getMeasureUnit()->getId() === $unit->getId()) {
                                     echo '<option value="' . $unit->getId() . '" selected>' . $unit->getDescription() . '</option>';
                                 }else {
                                     echo '<option value="' . $unit->getId() . '">' . $unit->getDescription() . '</option>';
@@ -77,7 +77,7 @@
                                 if (($sl->getStock() != null) and ($sl->getStock()->getId() == $s->getId())) {
                                     echo '<option value="' . $s->getId() . '" selected>' . $s->getDescription() . '</option>';
                                 }else {
-                                    if (($s->getMerge()->getId() == $sl->getMerge()->getId()))
+                                    if (($s->getStockMergement()->getId() == $sl->getStockMergement()->getId()))
                                         echo '<option value="' . $s->getId() . '">' . $s->getDescription() . '</option>';
                                 }
                             }
@@ -100,7 +100,7 @@
                             }
                             $find = true;
                         }else {
-                            if (($s->getMerge()->getId() == $sl->getMerge()->getId())) {
+                            if (($s->getStockMergement()->getId() == $sl->getStockMergement()->getId())) {
                                 if ($i == 0) {
                                     if ($s->getQuantity() <= 0) {
                                         $qty1 = '<font color="red">'.$s->getQuantity() .'</font>' . ' x '.$s->getNetquantity();
@@ -115,7 +115,7 @@
                     }
                     if (!$find) echo $qty1;
                     ?>
-                    </span><?php echo ' '.$sl->getMerge()->getUnit()->getUnit(); ?>
+                    </span><?php echo ' '.$sl->getStockMergement()->getMeasureUnit()->getUnit(); ?>
                 </td>
             </tr>
         <?php } ?>

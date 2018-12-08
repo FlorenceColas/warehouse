@@ -1,0 +1,68 @@
+<?php
+$form = $this->form;
+$form->setAttribute('action', $this->url('login', ['action' => 'login',]));
+//$form->setAttribute('action', $this->url('login', ['action' => 'authenticate',]));
+$form->prepare();
+echo $this->form()->openTag($form);
+echo '<table>';
+echo '<tr><td width="130" valign="middle">';
+echo $form->get('logonname')->getLabel();
+echo '</td>';
+echo '<td align="right">';
+echo '<div>'.$this->formElement($form->get('logonname')).'</div>';
+echo '</td></tr>';
+echo '<tr><td></td>';
+echo '<td>';
+echo '<div>'.$this->formElementErrors($form->get('logonname'), array('class' => 'custom_form_errors')).'</div>';
+echo '</td></tr>';
+echo '<tr><td width="130" valign="middle">';
+echo $form->get('password')->getLabel();
+echo '</td>';
+echo '<td align="right">';
+echo $this->formInput($form->get('password'));
+echo '</td</tr>';
+echo '<tr><td></td>';
+echo '<td>';
+echo '<div>'.$this->formElementErrors($form->get('password'), array('class' => 'custom_form_errors')).'</div>';
+echo '</td></tr>';
+echo '<tr>';
+echo '<td>';
+echo '</td>';
+echo '<td align="right">';
+//echo '<div>'.$form->get('rememberme')->getLabel().$this->formElement($form->get('rememberme')).'</div>';
+//echo '<div>'.$this->formElementErrors($form->get('rememberme'), array('class' => 'custom_form_errors')).'</div>';
+echo '</td>';
+echo '</tr>';
+echo '<tr>';
+echo '<td colspan="3" align="right"><span id="error-form-message">';
+if ($this->messages) {
+    foreach($this->messages as $message) {
+        echo $message;
+    }
+}
+if ($this->flashmessages) {
+    echo '</span>';
+    echo '<span class="custom_form_info">';
+    foreach($this->flashmessages as $message) {
+        //    echo $message;
+    }
+}
+echo '</span></td>';
+echo '</tr>';
+echo '<tr>';
+echo '<td colspan="2" align="right">';
+echo $this->formInput($form->get('submit'));
+echo '</td>';
+echo '</tr>';
+echo '<tr>';
+echo '<td colspan="2">';
+echo '</td>';
+echo '<tr>';
+echo '<td colspan="2" align="right">';
+echo '<a href="/auth/auth/loginhelp">Need help to login?</a>';
+echo '</td>';
+echo '</tr>';
+echo '</tr>';
+echo '</table>';
+
+echo $this->form()->closeTag();

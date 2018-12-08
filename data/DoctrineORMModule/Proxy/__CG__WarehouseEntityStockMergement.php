@@ -64,10 +64,10 @@ class StockMergement extends \Warehouse\Entity\StockMergement implements \Doctri
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'description', 'netquantity', 'unit', 'eqtblsp', 'eqcofsp', 'eqteasp', 'eqpinch', 'eqpiece', 'section', 'area', 'supplier'];
+            return ['__isInitialized__', 'id', 'area', 'section', 'supplier', 'measureunit', 'description', 'eqcofsp', 'eqpiece', 'eqpinch', 'eqtblsp', 'eqteasp', 'netquantity'];
         }
 
-        return ['__isInitialized__', 'id', 'description', 'netquantity', 'unit', 'eqtblsp', 'eqcofsp', 'eqteasp', 'eqpinch', 'eqpiece', 'section', 'area', 'supplier'];
+        return ['__isInitialized__', 'id', 'area', 'section', 'supplier', 'measureunit', 'description', 'eqcofsp', 'eqpiece', 'eqpinch', 'eqtblsp', 'eqteasp', 'netquantity'];
     }
 
     /**
@@ -246,23 +246,23 @@ class StockMergement extends \Warehouse\Entity\StockMergement implements \Doctri
     /**
      * {@inheritDoc}
      */
-    public function getUnit()
+    public function getMeasureUnit()
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getUnit', []);
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getMeasureUnit', []);
 
-        return parent::getUnit();
+        return parent::getMeasureUnit();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setUnit($unit)
+    public function setMeasureUnit($measureunit)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setUnit', [$unit]);
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setMeasureUnit', [$measureunit]);
 
-        return parent::setUnit($unit);
+        return parent::setMeasureUnit($measureunit);
     }
 
     /**

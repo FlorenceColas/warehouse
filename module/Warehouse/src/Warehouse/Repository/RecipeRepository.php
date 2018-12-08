@@ -1,94 +1,45 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 18/02/16
- * Version: 1.00
- * RecipeAttachmentRepository: Repository for recipeattachment table. It contains the following functions:
- *      - getPagedRecipe: recipe list pagination
- *      - findByRecipeId: return the recipe corresponding to the recipe id in parameter
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
-
 namespace Warehouse\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Warehouse\Entity\Recipe;
-use Warehouse\Enum\EnumSession;
-use Warehouse\Model\CriteriaRecipe;
-use Zend\Session\Container;
+use Zend\Db\Sql\Expression;
 
 class RecipeRepository extends EntityRepository
 {
     /**
-     * Recipe list pagination
-     * @param int $offset
-     * @param int $limit
-     * @param  $criteriaRecipe
-     * @param CriteriaRecipe $criteriaRecipe
-     * @return Paginator
+     * @param  array $criterias @optional
+     * @return Recipe[]
      */
-    public function getPagedRecipe($offset = 0, $limit = 50, $criteriaRecipe)
+    public function getFindRecipesByCriterias(array $criterias = null)
     {
-        $where = '';
-        $recipeSession = new Container(EnumSession::RECIPESEARCH);
-
-        if ($recipeSession->offsetExists(EnumSession::RECIPESEARCH_CATEGORY))
-            $category = $recipeSession->category;
-        else if (!is_null($criteriaRecipe))
-            $category = $criteriaRecipe->getCategory();
-
-        if (isset($category)) {
-            if (sizeof($category) != 0) {
-                $categoryValues = '';
-                foreach ($category as $c) {
-                    if ($categoryValues != '')
-                        $categoryValues = $categoryValues . ',' . $c;
-                    else
-                        $categoryValues = $c;
-                }
-                if ($categoryValues != '')
-                    $where = ' r.category in (' . $categoryValues . ')';
-            }
-        }
-
-        if (!is_null($criteriaRecipe)) {
-            if ($criteriaRecipe->getDescription() != '') {
-                if ($where != '')
-                    $where = $where . ' and r.description like \'%' . $criteriaRecipe->getDescription() . '%\'';
-                else
-                    $where = ' r.description like \'%' . $criteriaRecipe->getDescription() . '%\'';
-            }
-        }
-
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
 
-        $qb->select('r')
-            ->from('\Warehouse\Entity\Recipe', 'r')
-            ->orderBy('r.description')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
-        if ($where != '') {
-            $qb->where($where);
+        $qb->select('A.id, A.description, A.serves, DATE_FORMAT(A.preparationTime, \'%H:%i\') as preparationTime, DATE_FORMAT(A.totalTime, \'%H:%i\') as totalTime, C.filename')
+            ->from('\Warehouse\Entity\Recipe', 'A')
+            ->leftJoin('\Warehouse\Entity\RecipeAttachment', 'B', \Doctrine\ORM\Query\Expr\Join::WITH, 'B.recipes_id = A.id')
+            ->leftJoin('\Warehouse\Entity\Attachment'      , 'C', \Doctrine\ORM\Query\Expr\Join::WITH, 'C.id = B.attachment_id and C.defaultphoto=1');
+
+        if (null != $criterias) {
+            $qb->andWhere($qb->expr()->like('A.description', $qb->expr()->literal('%' . $criterias['description'] . '%')));
+            if (isset($criterias['categories']) and count($criterias['categories']) > 0) {
+                $qb->andWhere($qb->expr()->in('A.category', $criterias['categories']));
+            }
         }
 
-        //var_dump('query:'.$qb);
-        $query = $qb->getQuery();
-        $paginator = new Paginator($query);
+        $qb->orderBy('A.description', 'ASC');
+        $query = $qb->getQuery()->getArrayResult();
 
-        return $paginator;
+        return $query;
     }
 
     /**
-     * Return the recipe corresponding to the recipe id in parameter
      * @param int $id
      * @return Recipe
      */
-    public function findByRecipeId($id) {
-        $result = $this->findBy(array('id' => $id));
+    public function findByRecipeId(int $id) {
+        $result = $this->findBy(['id' => $id]);
         return $result;
     }
 }

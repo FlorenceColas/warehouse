@@ -1,25 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 13/11/16
- * Version: 1.00
- * Recipe: Entity corresponding to recipes table
- * Properties:
- *      - id
- *      - description
- *      - serves
- *      - preparationTime
- *      - totalTime
- *      - ingredients (collection of ingredient table)
- *      - instructions (collection of instruction table)
- *      - tags (collection of tag table)
- *      - note
- *      - category (category_id)
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -38,23 +17,6 @@ class Recipe
      */
     protected $id;
     /**
-     * @ORM\Column(type="string")
-    */
-    protected $description;
-    /**
-     * @ORM\Column(type="integer")
-     */
-    protected $serves;
-    /**
-     * @ORM\Column(type="time")
-     */
-    protected $preparationTime;
-    /**
-     * @ORM\Column(type="time")
-     */
-    protected $totalTime;
-	
-    /**
      * @ORM\OneToMany(targetEntity="Ingredient", mappedBy="recipe", cascade={"persist","remove"})
      * @var ArrayCollection Ingredient[]
      * @ORM\OrderBy({"sequence" = "ASC"})  //allow to order ingredients array
@@ -67,27 +29,47 @@ class Recipe
      **/
     private $instructions;
     /**
+     * @ORM\ManyToMany(targetEntity="Attachment")
+     * @ORM\JoinTable(name="recipes_attachment",
+     *      joinColumns={@ORM\JoinColumn (name="recipes_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="attachment_id", referencedColumnName="id")}
+     *      )
+     */
+    private $attachment;
+    /**
+     * @ORM\ManyToOne(targetEntity="Category")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
+     */
+    protected $category;
+    /**
      * @ORM\OneToMany(targetEntity="Tag", mappedBy="recipe", cascade={"persist","remove"})
      * @var ArrayCollection Tag[]
      **/
     private $tags;
     /**
      * @ORM\Column(type="string")
+    */
+    protected $description;
+    /**
+     * @ORM\Column(type="string")
      */
     protected $note;
     /**
-     * @ORM\ManyToOne(targetEntity="RecipeCategory")
-     * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
+     * @ORM\Column(type="time")
      */
-    protected $category;
+    protected $preparationTime;
     /**
-     * @ORM\OneToMany(targetEntity="RecipeAttachment", mappedBy="recipe", cascade={"persist","remove"})
-     * @var ArrayCollection RecipeAttachment[]
-     **/
-    protected $recipeattachments;
+     * @ORM\Column(type="integer")
+     */
+    protected $serves;
+    /**
+     * @ORM\Column(type="time")
+     */
+    protected $totalTime;
 
     public function __construct()
     {
+        $this->attachment = new ArrayCollection();
         $this->ingredients = new ArrayCollection();
 		$this->instructions = new ArrayCollection();
 		$this->tags = new ArrayCollection();
@@ -146,7 +128,11 @@ class Recipe
      */
     public function getPreparationTime()
     {
-        return $this->preparationTime;
+        if (is_null($this->preparationTime)) {
+            return '00:00';
+        } else {
+            return date_format($this->preparationTime, 'H:i');
+        }
     }
 
     /**
@@ -154,6 +140,21 @@ class Recipe
      */
     public function setPreparationTime($preparationTime)
     {
+        if (!$preparationTime instanceof \DateTime) {
+            $time = explode(':', $preparationTime);
+            if (count($time) <= 1) {
+                $time = explode(',', $preparationTime);
+                if (count($time) > 1) {
+                    $h = $time[0];
+                    $s = $time[1] * 60 / 10;
+                    $preparationTime = str_pad($h,2,'0',STR_PAD_LEFT) . ':' . str_pad($s,2,'0',STR_PAD_LEFT);
+                } else {
+                    $preparationTime = str_pad($preparationTime,2,'0',STR_PAD_LEFT) . ':00';
+                }
+            }
+            $preparationTime = new \DateTime($preparationTime);
+        }
+
         $this->preparationTime = $preparationTime;
     }
 
@@ -162,6 +163,21 @@ class Recipe
      */
     public function setTotalTime($totalTime)
     {
+        if (!$totalTime instanceof \DateTime) {
+            $time = explode(':', $totalTime);
+            if (count($time) <= 1) {
+                $time = explode(',', $totalTime);
+                if (count($time) > 1) {
+                    $h = $time[0];
+                    $s = $time[1] * 60 / 10;
+                    $totalTime = str_pad($h,2,'0',STR_PAD_LEFT) . ':' . str_pad($s,2,'0',STR_PAD_LEFT);
+                } else {
+                    $totalTime = str_pad($totalTime,2,'0',STR_PAD_LEFT) . ':00';
+                }
+            }
+            $totalTime = new \DateTime($totalTime);
+        }
+
         $this->totalTime = $totalTime;
     }
 
@@ -170,7 +186,11 @@ class Recipe
      */
     public function getTotalTime()
     {
-        return $this->totalTime;
+        if (is_null($this->totalTime)) {
+            return '00:00';
+        } else {
+            return date_format($this->totalTime, 'H:i');
+        }
     }
 
     /**
@@ -258,7 +278,7 @@ class Recipe
     }
 
     /**
-     * @return RecipeCategory
+     * @return Category
      */
     public function getCategory()
     {
@@ -266,37 +286,37 @@ class Recipe
     }
 
     /**
-     * @param RecipeCategory $category
+     * @param Category $category
      */
     public function setCategory($category)
     {
         $this->category = $category;
     }
 
+
     /**
-     * @param RecipeAttachment $recipeattachment
+     * @param Attachment $attachment
      */
-    public function addRecipeAttachment(RecipeAttachment $recipeattachment)
+    public function addAttachment(Attachment $attachment)
     {
-        $this->recipeattachments[] = $recipeattachment;
-        $recipeattachment->setRecipe($this);
+        $this->$attachment[] = $attachment;
+        $attachment->setRecipe($this);
         return $this;
     }
 
     /**
-     * @param RecipeAttachment $recipeattachment
+     * @param Attachment $attachment
      */
-    public function removeRecipeAttachment(Attachment $recipeattachment)
+    public function removeAttachment($attachment)
     {
-        $this->recipeattachments->removeElement($recipeattachment);
+        $this->$attachment->removeElement($attachment);
     }
 
     /**
-     * @return RecipeAttachment[]
+     * @return Attachment[]
      */
-    public function getRecipeAttachment()
+    public function getAttachment()
     {
-        return $this->recipeattachments;
+        return $this->attachment;
     }
-
 }

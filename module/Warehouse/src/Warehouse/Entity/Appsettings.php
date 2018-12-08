@@ -1,18 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 05/12/16
- * Version: 1.00
- * Appsettings: Entity corresponding to appsettings table
- * Properties:
- *      - id
- *      - settingreference
- *      - settingvalue
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;

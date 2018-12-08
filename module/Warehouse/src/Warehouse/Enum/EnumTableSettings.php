@@ -17,6 +17,6 @@ abstract class EnumTableSettings
     const MEASUREUNIT = 'MeasureUnit';
     const SUPPLIER = 'Supplier';
     const SECTION = 'Section';
-    const RECIPE_CATEGORY = "RecipeCategory";
+    const RECIPE_CATEGORY = "Category";
     const APPSETTINGS = 'Appsettings';
 }

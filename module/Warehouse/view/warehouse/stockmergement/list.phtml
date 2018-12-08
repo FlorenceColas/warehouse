@@ -1,181 +1,216 @@
-<script type="text/javascript">
-    $(function(ready){
-        $("#critarea").on('change','select',function () {
-//            alert('/warehouse/stock/critsectionvalues/id/'+document.getElementsByName("area")[0].value);
-            $.ajax({
-                url:        '/warehouse/stockmergement/critsectionvalues/id/'+document.getElementsByName("area")[0].value,
-                type:       'POST',
-                dataType:   'json',
-                async:      false,
-                //    data:       $("#stock[area_id]").serialize(),
-                success: function(data){
-                    $('#critsection').html(data.section);
-                    //   alert($("#area :selected").text()); // The text content of the selected option
-                    //   alert($("#area").val()); // The value of the selected option
 
-                },
-                error : function(xhr, textStatus, errorThrown) {
-                    if (xhr.status === 0) {
-                        alert('Not connected. Verify Network.');
-                    } else if (xhr.status == 404) {
-                        alert('Requested page not found. [404]');
-                    } else if (xhr.status == 500) {
-                        alert('Server Error [500].');
-                    } else if (errorThrown === 'parsererror') {
-                        alert('Requested JSON parse failed.');
-                    } else if (errorThrown === 'timeout') {
-                        alert('Time out error.');
-                    } else if (errorThrown === 'abort') {
-                        alert('Ajax request aborted.');
-                    } else {
-                        alert('Remote sever unavailable. Please try later');
-                    }
-                }
-            });
-        });
-    });
-</script>
 <div class="criteriadata">
     <h1>Search</h1>
-    <?php
-    $form = $this->criteriastockmergementform;
-    $form->prepare();
-
-    echo $this->form()->openTag($form);                 //open form tag
-    echo ('<div id="critarea"><p>Area:');
-    echo $this->formSelect($form->get('area'));     //domain
-    echo '</p></div>';
-    echo $this->formSubmit($form->get('search'));       //search button
-    echo ('<p></p>');
-    echo ('<p>Description contents:</p>');
-    echo $this->formRow($form->get('description'));     //description field
-    echo ('<hr>');
-    echo ('<p>Availability:</p>');                      //availability field
-    echo $this->formSelect($form->get('availability'));
-    echo ('<hr>');
-    echo ('<p>Status:</p>');
-    echo $this->formRadio($form->get('status'));        //status radio button
-    echo ('<hr>');
-    echo ('<p>Section:</p>');
-    echo ('<div id="critsection">');
-    $section = $form->get('section');                   //section checkboxes
-    echo $this->formMultiCheckbox($section);
-    echo ('</div>');
-    echo $this->form()->closeTag();                     //close form tag
-    ?>
+    <form method="post" action="/warehouse/stockmergement/list">
+        <input type="submit" value="Search"/>
+        <p></p>
+        <p>Description contents:</p>
+        <input type="text" name="description" id="description" value="">
+        <hr>
+        <div id="areaList">Area:
+            <select name="area" v-model="selectedArea">
+                <option v-for="area in areas" :value="area.id">{{area.description}}</option>
+            </select>
+        </div>
+        <hr>
+        <span id="sectionList">
+            <p>Section:</p>
+            <div class="text-uppercase text-bold"></div>
+            <label>
+                <input type="checkbox" v-model="allChecked" @click="checkAll">
+                All
+            </label>
+            <div v-for="section in sections">
+                <label>
+                    <input type="checkbox" :id="section.description" name="sections[]" :value="section.id" v-model="sectionsIds" @change="check(section.id)">
+                    {{section.description}}
+                </label>
+            </div>
+        </span>
+    </form>
 </div>
-<div class="listdata">
-    <?php $paging = $this->paginationHelper($pagedStock, $page, '/warehouse/stockmergement/list/', 50); ?>
-    <h1>Stock</h1>
-    <table>
-        <tr>
-            <td>
-                <form action="/warehouse/stockmergement/add">
-                    <input name="new" type="submit"  id="new" value="New Stock">
-                </form>
-            </td>
-            <td>
-                <div name="file" id="file"></div>
-            </td>
-        </tr>
-    </table>
+
+<div class="listdata" id="stockList">
+    <h1>Inventory</h1>
+    <form method="get" action="/warehouse/stockmergement/add">
+        <input type="submit" value="New"/>
+    </form>
     <table class="table table-striped">
         <thead>
         <tr>
-            <th>Article description</th>
-            <th>Quantity</th>
+            <th @click="sort('description')">
+                <u v-if="currentSort === 'description'">Description</u>
+                <font v-else>Article description</font>
+            </th>
+            <th @click="sort('quantity')">
+                <u v-if="currentSort === 'quantity'">Net Quantity</u>
+                <font v-else>Net Quantity</font>
+            </th>
         </tr>
         </thead>
         <tbody>
-        <?php foreach($pagedStock as $stockLine) { ?>
-            <tr>
-                <td><div class="col-md-10">
-                        <a class="settingdetail" href="/warehouse/stockmergement/display/id/<?php echo $stockLine->getId(); ?>"><?php echo $stockLine->getDescription(); ?></a>
-                    </div>
-                </td>
-                <td><div class="col-md-10"><?php
-                        if ($stockLine->getNetquantity() <= 0)
-                            echo ('<font color="red">'. $stockLine->getNetquantity().$stockLine->getUnit()->getUnit().'</font>');
-                        else
-                            echo ($stockLine->getNetquantity().$stockLine->getUnit()->getUnit());
-                        ?>
-                    </div></td>
-            </tr>
-        <?php } ?>
+        <tr v-for="stock in sortedStock">
+            <td><div class="col-md-10"><a :href="'/warehouse/stockmergement/display/id/' + stock.id + ''">{{stock.description}}</a></div></td>
+            <td>{{stock.netquantity}} {{stock.unit}}</td>
+        </tr>
         </tbody>
     </table>
-    <div class="paging">
-        <?php if (sizeof($pagedStock) > 0) echo $paging; ?>
-    </div>
+    <table width="370px">
+        <tr v-if="pagesNumber > 0">
+            <td width="5%" align="left"><a @click="firstPage"><<</a></td>
+            <td width="5%" align="right"><a @click="prevPage"><</a></td>
+            <td width="30%" align="middle">Page {{currentPage}} / {{pagesNumber}}</td>
+            <td width="5%" align="left"><a @click="nextPage">></a></td>
+            <td width="5%" align="right"><a @click="lastPage">>></a></td>
+            <td width="50%">
+                <select id="limit" @change="changeLimit">
+                    <option value="20">20</option>
+                    <option value="40">40</option>
+                    <option value="60">60</option>
+                    <option value="100">100</option>
+                </select>
+                (per page)
+            </td>
+        </tr>
+        <tr v-else>
+            <td width="10%" align="left"><i>No data corresponding to these criterias</i></td>
+        </tr>
+    </table>
 </div>
 
-<script type="text/javascript">
-    $("#validButton").click(function() {
-        var url = "/api/addressForm/validForm";
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: $("#addressForm").serialize(),
-            success: function(data)
-            {
-                $('.alert').hide();
-                $('.form-group').removeClass("has-error");
-                $('.form-group').addClass("has-success");
-                console.log(data.isValid);
-                if ( ! data.isValid) {
-                    $.each(data.messages,function(index,inputMessages){
-                        $.each(inputMessages,function(input,message) {
-                            htmlError = message + '<br>';
-                            id = "#" + index + "_error_message";
-                            formGroupId = "#" + index + "_form_group";
-                            $(id).html(htmlError);
-                            $(id).show();
-                            $(formGroupId).removeClass("has-success");
-                            $(formGroupId).addClass("has-error");
-                        });
-                    });
-                }
-                else $("#addressForm").submit();
-            }
-        });
+<!--<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min.js"></script>-->
+<script src="../../../../js/vue.min.js"></script>
+<script>
+    const areaList = new Vue({
+        el: '#areaList',
+        data: {
+            areas: [],
+            selectedArea: ''
+        },
+        created: function () {
+            this.areas = <?= $this->areas; ?>;
+            this.selectedArea = <?= $this->selectedArea; ?>;
+        }
     });
 
-    function exportxlslist(){
-        event.preventDefault();
-        $.ajax({
-            url: '/warehouse/stockmergement/exportxls',
-            type:       'POST',
-            dataType:   'json',
-            async:      false,
-            success: function(data, status){
-                $("#file").html(data.file);
-            },
-            error: function(xhr, status, errorThrown){
-                if (xhr.status === 0) {
-                    alert('Not connected. Verify Network.');
-                } else if (xhr.status == 404) {
-                    alert('Requested page not found. [404]');
-                } else if (xhr.status == 500) {
-                    alert('Server Error [500].');
-                } else if (errorThrown === 'parsererror') {
-                    alert('Requested JSON parse failed.');
-                } else if (errorThrown === 'timeout') {
-                    alert('Time out error.');
-                } else if (errorThrown === 'abort') {
-                    alert('Ajax request aborted.');
-                } else {
-                    alert('Remote sever unavailable. Please try later');
+    const sectionList = new Vue({
+        el: '#sectionList',
+        data: {
+            sections: [],
+            sectionsIds: [],
+            checked: [],
+            allChecked: false,
+            sectionSize: 0,
+            sortedSections: []
+        },
+        created: function () {
+            this.sections = <?= $this->sections; ?>;
+            for (section in this.sections) {
+                if (this.sections[section].checked) {
+                    this.sectionsIds.push(this.sections[section].id.toString());
+                }
+                this.sectionSize = this.sectionSize + 1;
+            }
+
+            if (this.sectionSize == this.sectionsIds.length) {
+                this.allChecked = true;
+            } else {
+                this.allChecked = false;
+            }
+        },
+        methods: {
+            checkAll: function() {
+                this.sectionsIds = [];
+                for (section in this.sections) {
+                    if (this.allChecked) {
+                        this.sectionsIds.push(this.sections[section].id.toString());
+                        this.sections[section].checked = true;
+                    } else {
+                        this.sections[section].checked = false;
+                    }
                 }
             },
-            complete: function(xhr, textStatus) {
-                //       alert(textStatus);
+            check: function(id) {
+                if (this.sections[id].checked) {
+                    this.sections[id].checked = false;
+                } else {
+                    this.sections[id].checked = true;
+                }
+
+                this.sectionsIds = [];
+                for (section in this.sections) {
+                    if (this.sections[section].checked) {
+                        this.sectionsIds.push(this.sections[section].id.toString());
+                    }
+                }
+
+                if (this.sectionSize == this.sectionsIds.length) {
+                    this.allChecked = true;
+                } else {
+                    this.allChecked = false;
+                }
             }
-        });
-    }
+        }
+    });
 
-    function OpenRLink(l){
-        window.open(l);
+    const stocklist = new Vue({
+            el:'#stockList',
+            data:{
+                stock:[],
+                sections:[],
+                currentSort:'description',
+                currentSortDir:'asc',
+                pageSize:20,
+                currentPage:1,
+                stockSize:0,
+                pagesNumber:1
+            },
+            created:function() {
+                this.stock = <?= $this->stock; ?>;
+                this.sections = <?= $this->sections; ?>;
+                this.stockSize = this.stock.length;
+                this.pagesNumber = Math.ceil(this.stockSize / this.pageSize);
+            },
+            methods:{
+                sort:function(s) {
+                    if(s === this.currentSort) {
+                        this.currentSortDir = this.currentSortDir==='asc'?'desc':'asc';
+                    }
+                    this.currentSort = s;
+                },
+                firstPage:function() {
+                    this.currentPage = 1;
+                },
+                nextPage:function() {
+                    if((this.currentPage*this.pageSize) < this.stock.length) this.currentPage++;
+                },
+                prevPage:function() {
+                    if(this.currentPage > 1) this.currentPage--;
+                },
+                lastPage:function() {
+                    this.currentPage = Math.ceil(this.stockSize / this.pageSize);
+                },
+                changeLimit:function() {
+                    var e = document.getElementById("limit");
+                    this.pageSize = e.options[e.selectedIndex].value;
+                    this.pagesNumber = Math.ceil(this.stockSize / this.pageSize);
+                },
+            },
+            computed:{
+                sortedStock:function() {
+                    return this.stock.sort((a,b) => {
+                            let modifier = 1;
+                    if(this.currentSortDir === 'desc') modifier = -1;
+                    if(a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
+                    if(a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
+                    return 0;
+                }).filter((row, index) => {
+            let start = (this.currentPage-1)*this.pageSize;
+    let end = this.currentPage*this.pageSize;
+    if(index >= start && index < end) return true;
+    });
     }
-
+    }
+    }
+    )
 </script>
-

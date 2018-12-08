@@ -64,10 +64,10 @@ class Stock extends \Warehouse\Entity\Stock implements \Doctrine\ORM\Proxy\Proxy
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'barcode', 'description', 'quantity', 'infothreshold', 'criticalthreshold', 'supplierreference', 'status', 'attachments', 'stockmovement', 'notes', 'merge', 'netquantity', 'prefered'];
+            return ['__isInitialized__', 'id', 'attachments', 'stockmergement', 'stockmovement', 'barcode', 'criticalthreshold', 'description', 'infothreshold', 'notes', 'quantity', 'status', 'supplierreference', 'netquantity', 'prefered'];
         }
 
-        return ['__isInitialized__', 'id', 'barcode', 'description', 'quantity', 'infothreshold', 'criticalthreshold', 'supplierreference', 'status', 'attachments', 'stockmovement', 'notes', 'merge', 'netquantity', 'prefered'];
+        return ['__isInitialized__', 'id', 'attachments', 'stockmergement', 'stockmovement', 'barcode', 'criticalthreshold', 'description', 'infothreshold', 'notes', 'quantity', 'status', 'supplierreference', 'netquantity', 'prefered'];
     }
 
     /**
@@ -455,23 +455,23 @@ class Stock extends \Warehouse\Entity\Stock implements \Doctrine\ORM\Proxy\Proxy
     /**
      * {@inheritDoc}
      */
-    public function getMerge()
+    public function getStockMergement()
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getMerge', []);
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getStockMergement', []);
 
-        return parent::getMerge();
+        return parent::getStockMergement();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setMerge($merge)
+    public function setStockMergement($stockmergement)
     {
 
-        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setMerge', [$merge]);
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setStockMergement', [$stockmergement]);
 
-        return parent::setMerge($merge);
+        return parent::setStockMergement($stockmergement);
     }
 
     /**

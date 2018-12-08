@@ -18,13 +18,13 @@ if(preg_match('/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|c
             <?php foreach ($this->get('shoppinglist') as $sl) { ?>
                 <tr>
                     <td class="articlestatus" id="<?php echo $sl->getId(); ?>" style="background-color:<?php
-                    if ($sl->getStatus() == \Warehouse\Enum\EnumShoppingListStatus::SHOPPING_LIST_STATUS_NEW_TO_BUY) echo \Warehouse\Enum\EnumColor::COLOR_RED_MISTY_ROSE;
-                    elseif ($sl->getStatus() == \Warehouse\Enum\EnumShoppingListStatus::SHOPPING_LIST_STATUS_BOUGHT) echo \Warehouse\Enum\EnumColor::COLOR_GREEN_HONEY_DEW;
+                    if ($sl->getStatus() == \Warehouse\Controller\ShoppingController::SHOPPING_LIST_STATUS_NEW_TO_BUY) echo $this->get('config')['shopping_list']['color']['to_buy'];
+                    elseif ($sl->getStatus() == \Warehouse\Controller\ShoppingController::SHOPPING_LIST_STATUS_BOUGHT) echo $this->get('config')['shopping_list']['color']['bought'];
                     ?>;">
                         <div class="col-md-10"><?php echo $sl->getDescription(); ?></div>
                     </td>
                     <td>
-                        <div class="col-md-10"><?php echo $sl->getQuantity(). ' '.$sl->getUnit()->getUnit();?></div>
+                        <div class="col-md-10"><?php echo $sl->getQuantity(). ' '.$sl->getMeasureUnit()->getUnit();?></div>
                     </td>
                     <td>
                         <div class="col-md-10">
@@ -124,8 +124,8 @@ if(preg_match('/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|c
             <tr>
                 <td><div class="col-md-10"><?php echo $sl->getSection()->getDescription(); ?></div></td>
                 <td class="articlestatus" id="<?php echo $sl->getId(); ?>" style="background-color:<?php
-                    if ($sl->getStatus() == \Warehouse\Enum\EnumShoppingListStatus::SHOPPING_LIST_STATUS_NEW_TO_BUY) echo \Warehouse\Enum\EnumColor::COLOR_RED_MISTY_ROSE;
-                    elseif ($sl->getStatus() == \Warehouse\Enum\EnumShoppingListStatus::SHOPPING_LIST_STATUS_BOUGHT) echo \Warehouse\Enum\EnumColor::COLOR_GREEN_HONEY_DEW;
+                    if ($sl->getStatus() == \Warehouse\Controller\ShoppingController::SHOPPING_LIST_STATUS_NEW_TO_BUY) echo $this->get('config')['shopping_list']['color']['to_buy'];
+                    elseif ($sl->getStatus() == \Warehouse\Controller\ShoppingController::SHOPPING_LIST_STATUS_BOUGHT) echo $this->get('config')['shopping_list']['color']['bought'];
                 ?>;"><div class="col-md-50"><?php echo $sl->getDescription(); ?></div></td>
 
                 <td><div class="col-md-10"><?php
@@ -152,7 +152,7 @@ if(preg_match('/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|c
                         <select class="unit" name="<?php echo $sl->getId(); ?>" id="<?php echo $sl->getId(); ?>">
                             <?php
                                 foreach ($units as $unit) {
-                                    if ($sl->getUnit()->getId() === $unit->getId()) {
+                                    if ($sl->getMeasureUnit()->getId() === $unit->getId()) {
                                         echo '<option value="' . $unit->getId() . '" selected>' . $unit->getDescription() . '</option>';
                                     }else {
                                         echo '<option value="' . $unit->getId() . '">' . $unit->getDescription() . '</option>';

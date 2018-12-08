@@ -1,30 +1,16 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 20/02/16
- * Version: 1.00
- * StockFieldset: Fieldset which contains the stock form fields
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
 
 namespace Warehouse\Fieldset;
 
-use Warehouse\Entity\Stock;
-use Warehouse\Enum\EnumStatus;
-use Zend\Form\Fieldset;
-use Zend\InputFilter\InputFilterProviderInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
-use Zend\Form\Element\Collection;
+use Warehouse\Entity\Stock;
 use Zend\Form\Element;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Form\Fieldset;
+use Zend\Hydrator\ClassMethods as ClassMethodsHydrator;
+use Zend\InputFilter\InputFilterProviderInterface;
 
-class StockFieldset extends Fieldset implements InputFilterProviderInterface, ServiceLocatorAwareInterface
+class StockFieldset extends Fieldset implements InputFilterProviderInterface
 {
-    protected $serviceLocator;
     protected $objectManager;
 
     public function __construct(ObjectManager $objectManager)
@@ -33,7 +19,7 @@ class StockFieldset extends Fieldset implements InputFilterProviderInterface, Se
 
         $this->objectManager = $objectManager;
 
-        $this->setHydrator(new DoctrineHydrator($this->objectManager,'Warehouse\Entity\Stock',false));
+        $this->setHydrator(new ClassMethodsHydrator(false));
         $this->setObject(new Stock());
 
         $this->setLabel('Stock');
@@ -43,228 +29,211 @@ class StockFieldset extends Fieldset implements InputFilterProviderInterface, Se
 
     public function init(){
         $this->add([
+            'name' => 'id',
             'type' => 'Zend\Form\Element\Hidden',
-            'name' => 'id'
         ]);
 
-        $this->add(array(
-            'type'    => 'Zend\Form\Element\Number',
-            'name'    => 'barcode',
-            'filters' => array(
-                array('name' => 'Zend\Filter\StringTrim'),
-            ),
-            'options' => array(
-                'label' => ''
-            ),
-            'attributes' => array(
-                'id' => 'barcode',
-                //'readonly' => TRUE,
-            ),
-        ));
-
-        $this->add(array(
-            'type'    => 'Zend\Form\Element\TextArea',
-            'name'    => 'description',
-            'options' => array(
-                'label' => ''
-            ),
+        $this->add([
             'attributes' => [
-                'cols' => 90,
-                'rows' => 1,
-                'maxlength' => 255
-            ]
-        ));
-
-        $this->add(array(
-            'type'    => 'Zend\Form\Element\Checkbox',
-            'name'    => 'chkautobarcode',
-            'options' => array(
+                'id' => 'barcode',
+            ],
+            'filters'    => [
+                [
+                    'name' => 'Zend\Filter\StringTrim'
+                ],
+            ],
+            'name'       => 'barcode',
+            'options'    => [
                 'label' => '',
-                'checked_value' => 'auto',
-                'unchecked_value' => 'manual'
-            ),
-            'attributes' => array(
+            ],
+            'type'       => 'Zend\Form\Element\Number',
+        ]);
+
+        $this->add([
+            'attributes' => [
+                'cols'      => 90,
+                'maxlength' => 255,
+                'rows'      => 1,
+            ],
+            'name'       => 'description',
+            'options'    => [
+                'label' => '',
+            ],
+            'type'       => 'Zend\Form\Element\TextArea',
+        ]);
+
+        $this->add([
+            'attributes' => [
                 'id' => 'chkautobarcode',
 
-            ),
-        ));
+            ],
+            'name'       => 'chkautobarcode',
+            'options'    => [
+                'checked_value'   => 'auto',
+                'label'           => '',
+                'unchecked_value' => 'manual',
+            ],
+            'type'       => 'Zend\Form\Element\Checkbox',
+        ]);
 
-        $this->add(array(
-            'type'    => 'Zend\Form\Element\Checkbox',
-            'name'    => 'prefered',
-            'options' => array(
-                'label' => '',
-                'checked_value' => '1',
-                'unchecked_value' => '99'
-            ),
-            'attributes' => array(
-                'id' => 'prefered',
-
-            ),
-        ));
-
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Number',
-            'name' => 'quantity',
-            'options' => array(
-                'label' => ''
-            ),
-            'attributes' => array(
-                'min' => '0',
-                'max' => '100000',
-                'step' => '1', // default step interval is 1
-            )
-        ));
-
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Number',
-            'name' => 'netquantity',
-            'options' => array(
-                'label' => ''
-            ),
-            'attributes' => array(
-                'min' => '0',
-                'max' => '100000',
-                'step' => '1', // default step interval is 1
-            )
-        ));
-
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Number',
-            'name' => 'infothreshold',
-            'options' => array(
-                'label' => ''
-            ),
-            'attributes' => array(
-                'min' => '0',
-                'max' => '100000',
-                'step' => '1', // default step interval is 1
-            )
-        ));
-
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Number',
-            'name' => 'criticalthreshold',
-            'options' => array(
-                'label' => ''
-            ),
-            'attributes' => array(
-                'min' => '0',
-                'max' => '100000',
-                'step' => '1', // default step interval is 1
-            )
-        ));
-
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'status',
-            'options' => array(
-                'label' => '',
-                'value_options' => array(
-                    EnumStatus::Enabled => 'Enabled',
-                    EnumStatus::Disabled => 'Disabled',
-                ),
-                'attributes' => array(
-                    'value'  => EnumStatus::Enabled,
-                ),
-            ),
-        ));
-
-        $this->add(array(
-            'type'    => 'Zend\Form\Element\TextArea',
-            'name'    => 'notes',
-            'options' => array(
-                'label' => ''
-            ),
+        $this->add([
             'attributes' => [
-                'cols' => 50,
-                'rows' => 1,
-                'maxlength' => 50
-            ]
-        ));
+                'id' => 'prefered',
+            ],
+            'name'       => 'prefered',
+            'options'    => [
+                'checked_value'   => '1',
+                'label'           => '',
+                'unchecked_value' => '99',
+            ],
+            'type'       => 'Zend\Form\Element\Checkbox',
+        ]);
 
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'merge_id',
-            'options' => array(
-                'label' => '',
-                'empty_option' => 'Please choose the merger stock'
-            ),
-        ));
-
-        $this->add(array(
-            'type'    => 'Zend\Form\Element\Text',
-            'name'    => 'supplierreference',
-            'options' => array(
+        $this->add([
+            'attributes' => [
+                'max'  => '999999',
+                'min'  => '0',
+                'step' => '0.5',
+            ],
+            'name'       => 'quantity',
+            'options'    => [
                 'label' => ''
-            )
-        ));
-        $attachments = new Collection('attachments');
-        $attachments->setLabel('Attachments')
-            ->setOptions(array(
-                'count'          => 1,
-                'allow_add'      => true,
-                'allow_remove'   => true,
-                'should_create_template' => true,
-                'template_placeholder' => '__attachments__',
-                'target_element' => new AttachmentFieldset($this->objectManager),
-            ));
-        $this->add($attachments);
-    }
+            ],
+            'type'       => 'Zend\Form\Element\Number',
+        ]);
 
-    public function setServiceLocator(ServiceLocatorInterface $sl)
-    {
-        $this->serviceLocator = $sl;
-    }
+        $this->add([
+            'attributes' => [
+                'max'  => '999999',
+                'min'  => '0',
+                'step' => '0.5',
+            ],
+            'name'       => 'netquantity',
+            'options'    => [
+                'label' => '',
+            ],
+            'type'       => 'Zend\Form\Element\Number',
+        ]);
 
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
+        $this->add([
+            'attributes' => [
+                'max'  => '999999',
+                'min'  => '0',
+                'step' => '0.5',
+            ],
+            'name'       => 'infothreshold',
+            'options'    => [
+                'label' => '',
+            ],
+            'type'       => 'Zend\Form\Element\Number',
+        ]);
+
+        $this->add([
+            'attributes' => [
+                'max'  => '999999',
+                'min'  => '0',
+                'step' => '0.5',
+            ],
+            'name'       => 'criticalthreshold',
+            'options'    => [
+                'label' => '',
+            ],
+            'type'       => 'Zend\Form\Element\Number',
+        ]);
+
+        $this->add([
+            'name'    => 'status',
+            'options' => [
+                'attributes'    => [
+                    'value' => \Warehouse\Controller\InventoryController::ENABLED,
+                ],
+                'label'         => '',
+                'value_options' => [
+                    \Warehouse\Controller\InventoryController::DISABLED => 'Disabled',
+                    \Warehouse\Controller\InventoryController::ENABLED  => 'Enabled',
+                ],
+            ],
+            'type'    => 'Zend\Form\Element\Select',
+        ]);
+
+        $this->add([
+            'attributes' => [
+                'cols'      => 50,
+                'maxlength' => 50,
+                'rows'      => 1,
+            ],
+            'name'       => 'notes',
+            'options'    => [
+                'label' => '',
+            ],
+            'type'       => 'Zend\Form\Element\TextArea',
+        ]);
+
+        $this->add([
+            'name'    => 'stockmergement_id',
+            'options' => [
+                'empty_option' => 'Please choose the merger stock',
+                'label'        => '',
+            ],
+            'type'    => 'Zend\Form\Element\Select',
+        ]);
+
+        $this->add([
+            'name'    => 'supplierreference',
+            'options' => [
+                'label' => '',
+            ],
+            'type'    => 'Zend\Form\Element\Text',
+        ]);
     }
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'barcode' => array(
-                'required' => true,
-            ),
-            'description' => array(
-                'required' => true,
-                'filters' => array(
-                    array('name' => 'StringTrim'),
-                    array('name' => 'StripTags')
-                ),
-                'properties' => array(
-                    'required' => true
-                )
-            ),
-            'quantity' => [
+        return [
+            'barcode' => [
                 'required' => true,
             ],
-            'merge_id' => [
+            'chkautobarcode' => [
+                'required' => false,
+            ],
+            'criticalthreshold' => [
+                'required' => true
+            ],
+            'description' => [
+                'filters'  => [
+                    [
+                        'name' => 'StringTrim',
+                    ],
+                    [
+                        'name' => 'StripTags',
+                    ],
+                ],
+                'properties' => [
+                    'required' => true,
+                ],
+                'required'   => true,
+            ],
+            'infothreshold' => [
+                'required' => true,
+            ],
+            'stockmergement_id' => [
                 'required' => false,
             ],
             'netquantity' => [
                 'required' => true,
             ],
-            'infothreshold' => [
-                'required' => true,
-            ],
-            'criticalthreshold' => [
-                'required' => true
-            ],
-            'status' => [
-                'required' => true,
-            ],
             'notes' => [
-                'required' => false, //force none requirement to avoid some wrong message (is empty)
-            ],
-            'chkautobarcode' => [
                 'required' => false,
             ],
             'prefered' => [
                 'required' => true,
-            ]
-        );
+            ],
+            'quantity' => [
+                'required' => true,
+            ],
+            'status' => [
+                'required' => true,
+            ],
+        ];
     }
 }

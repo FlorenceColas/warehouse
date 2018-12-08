@@ -1,125 +1,55 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 04/02/16
- * Version: 1.00
- * StockRepository: Repository for stock table. It contains the following functions:
- *      - getPagedStock: stock list pagination
- *      - findAllOrderByDescription: return all the stock
- *      - findAllForAreaOrderByDescription: return all the stock for the area in parameter
- *      - findByStockId: return the stock corresponding to the stock id in parameter
- *      - findCountQuantityForMergeId: return the total quantity corresponding to the merge_id in parameter
- *      - findByMergeId: return the stock list corresponding to the merge id in parameter
- *      - findByPreferedMergeId: return the stock list corresponding to the prefered merge id in parameter
- *      - findAllMergedOrderByMergePreferedDescription: return all the stock with a merger
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *      - 11/02/2017: add findCountQuantityForMergeId function
- *
- */
 
 namespace Warehouse\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Tools\Pagination\Paginator;
-use Warehouse\Enum\EnumAvailability;
-use Warehouse\Enum\EnumStatus;
-use Warehouse\Model\CriteriaStock;
 use Warehouse\Entity\Stock;
-use Zend\Session\Container;
 
 class StockRepository extends EntityRepository
 {
     /**
-     * Stock list pagination
-     * @param int $offset
-     * @param int $limit
-     * @param CriteriaStock $criteriaStock
-     * @return Paginator
+     * @param array|null $criterias
+     * @return Stock[]
      */
-    public function getPagedStock($offset = 0, $limit = 50, $criteriaStock)
+    public function getStockByCriterias(array $criterias = null)
     {
-        $where = '';
-        $inventorySession = new Container('InventorySearch');
-
-        if ($inventorySession->offsetExists('status')) {
-            $where = 's.status = ' . $inventorySession->status;
-        }
-        else {
-            $where = 's.status = ' . EnumStatus::Enabled;
-        }
-
-/*        if ($inventorySession->offsetExists('section'))
-            $section = $inventorySession->section;
-        else if (!is_null($criteriaStock))
-            $section = $criteriaStock->getSection();
-
-        if (isset($section)) {
-            if (sizeof($section) != 0) {
-                $sectionValues = '';
-                foreach ($section as $s) {
-                    if ($sectionValues != '')
-                        $sectionValues = $sectionValues . ',' . $s;
-                    else
-                        $sectionValues = $s;
-                }
-                if ($sectionValues != '')
-                    $where = $where . ' and s.section in (' . $sectionValues . ')';
-            }
-        }
-*/
-        if (!is_null($criteriaStock)) {
-            if ($criteriaStock->getDescription() != '') {
-                $where = $where . ' and s.description like \'%' . $criteriaStock->getDescription() . '%\'';
-            }
-        }
-
-/*        if ($inventorySession->offsetExists('area'))
-            $area = $inventorySession->area;
-        else if (!is_null($criteriaStock))
-            $area = $criteriaStock->getArea();
-        if (isset($area)) {
-            $where = $where . ' and s.area = ' . $area;
-        }
-*/
-        if ($inventorySession->offsetExists('availability'))
-            $availability = $inventorySession->availability;
-        else if (!is_null($criteriaStock))
-            $availability = $criteriaStock->getAvailability();
-        if (isset($availability)) {
-            switch ($availability) {
-                case EnumAvailability::OnStock:
-                    $where = $where . ' and s.quantity > 0';
-                    break;
-                case EnumAvailability::NotOnStock:
-                    $where = $where . ' and s.quantity = 0';
-                    break;
-                case EnumAvailability::UnderInfoThreshold:
-                    $where = $where . ' and s.quantity <= s.infothreshold';
-                    break;
-                case EnumAvailability::UnderCriticalThreshold:
-                    $where = $where . ' and s.quantity <= s.criticalthreshold';
-                    break;
-            }
-        }
-
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
 
-        $qb->select('s')
-            ->from('\Warehouse\Entity\Stock', 's')
-            ->orderBy('s.description')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
-        if ($where != '')
-        {
-            $qb->where($where);
+        $qb->select('A.id, A.description, A.status, A.quantity, A.netquantity, A.infothreshold, A.criticalthreshold, C.unit, E.filename')
+            ->from('\Warehouse\Entity\Stock', 'A')
+            ->leftJoin('\Warehouse\Entity\StockMergement' , 'B', \Doctrine\ORM\Query\Expr\Join::WITH, 'B.id = A.stockmergement')
+            ->leftJoin('\Warehouse\Entity\MeasureUnit'    , 'C', \Doctrine\ORM\Query\Expr\Join::WITH, 'C.id = B.measureunit')
+            ->leftJoin('\Warehouse\Entity\StockAttachment', 'D', \Doctrine\ORM\Query\Expr\Join::WITH, 'D.stock_id = A.id')
+            ->leftJoin('\Warehouse\Entity\Attachment'     , 'E', \Doctrine\ORM\Query\Expr\Join::WITH, 'E.id = D.attachment_id and E.defaultphoto=1');
+        /*
+                select a.*,c.* from stock a
+        left join stock_attachment b on b.stock_id = a.id
+        left join attachment c on c.id = b.attachment_id and c.defaultphoto=1
+        where a.id=297
+                */
+
+        if (null != $criterias) {
+            if (isset($criterias['description'])) {
+                $qb->andWhere($qb->expr()->like('A.description', $qb->expr()->literal('%' . $criterias['description'] . '%')));
+            }
+            if (isset($criterias['area'])) {
+                $qb->andWhere('B.area = ?1')
+                    ->setParameter(1, $criterias['area']);
+            }
+            if (isset($criterias['status'])) {
+                $qb->andWhere('A.status = ?2')
+                    ->setParameter(2, $criterias['status']);
+            }
+            if (isset($criterias['sections']) and count($criterias['sections']) > 0) {
+                $qb->andWhere($qb->expr()->in('B.section', $criterias['sections']));
+            }
         }
-        $query = $qb->getQuery();
 
-        $paginator = new Paginator($query);
+        $qb->orderBy('A.description', 'ASC');
+        $query = $qb->getQuery()->getArrayResult();
 
-        return $paginator;
+        return $query;
     }
 
     /**
@@ -177,7 +107,7 @@ class StockRepository extends EntityRepository
 
         $qb->select('sum(s.quantity * s.netquantity) as quantity')
             ->from('\Warehouse\Entity\Stock', 's')
-            ->where('s.merge='.$mergeId);
+            ->where('s.stockmergement='.$mergeId);
         $query = $qb->getQuery()->getResult();
         return $query;
     }
@@ -192,7 +122,7 @@ class StockRepository extends EntityRepository
 
         $qb->select('s')
             ->from('\Warehouse\Entity\Stock', 's')
-            ->where('s.merge='.$merge)
+            ->where('s.stockmergement='.$merge)
             ->orderBy('s.description');
         $query = $qb->getQuery()->getResult();
 
@@ -209,7 +139,7 @@ class StockRepository extends EntityRepository
 
         $qb->select('s')
             ->from('\Warehouse\Entity\Stock', 's')
-            ->where('s.merge='.$merge)
+            ->where('s.stockmergement='.$merge)
             ->orderBy('s.prefered,s.description');
         $query = $qb->getQuery()->getResult();
 
@@ -226,8 +156,8 @@ class StockRepository extends EntityRepository
 
         $qb->select('s')
             ->from('\Warehouse\Entity\Stock', 's')
-            ->where('s.merge is not null')
-            ->orderBy('s.merge,s.prefered,s.description');
+            ->where('s.stockmergement is not null')
+            ->orderBy('s.stockmergement,s.prefered,s.description');
         $query = $qb->getQuery()->getResult();
 
         return $query;
@@ -244,7 +174,7 @@ class StockRepository extends EntityRepository
 
         $qb->select('s')
             ->from('\Warehouse\Entity\Stock', 's')
-            ->where('s.merge='.$merge . ' and s.id!='.$id);
+            ->where('s.stockmergement='.$merge . ' and s.id!='.$id);
         $query = $qb->getQuery()->getResult();
 
         return $query;

@@ -47,7 +47,7 @@ class IngredientFieldset extends Fieldset implements InputFilterProviderInterfac
 
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'merge_id',
+            'name' => 'stockmergement_id',
             'options' => array(
                 'label' => ''
             ),
@@ -60,15 +60,15 @@ class IngredientFieldset extends Fieldset implements InputFilterProviderInterfac
                 'label' => ''
             ),
             'attributes' => array(
-                'min' => '1',
-                'max' => '10',
-                'step' => '1', // default step interval is 1
+                'min' => '0',
+                'max' => '999999',
+                'step' => '0.25',
             )
         ));
 
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',
-            'name' => 'unit_id',
+            'name' => 'measureunit_id',
             'options' => array(
                 'label' => ''
             ),
@@ -89,7 +89,7 @@ class IngredientFieldset extends Fieldset implements InputFilterProviderInterfac
 
         $this->add(array(
             'type' => 'Zend\Form\Element\Hidden',
-            'name' => 'recipe_id'
+            'name' => 'recipes_id'
         ));
 
         //Initialise la liste des articles
@@ -98,7 +98,7 @@ class IngredientFieldset extends Fieldset implements InputFilterProviderInterfac
         foreach($stockMergement as $st) {
             $options[$st->getId()] = $st->getDescription();
         }
-        $this->get('merge_id')->setValueOptions($options);
+        $this->get('stockmergement_id')->setValueOptions($options);
 
         //load MeasureUnit list
         $unit = $objectManager->getRepository('Warehouse\Entity\MeasureUnit')->findAllOrderByDescription(EnumTableSettings::MEASUREUNIT);
@@ -106,14 +106,14 @@ class IngredientFieldset extends Fieldset implements InputFilterProviderInterfac
         foreach($unit as $st) {
             $options[$st->getId()] = $st->getUnit();
         }
-        $this->get('unit_id')->setValueOptions($options);
+        $this->get('measureunit_id')->setValueOptions($options);
 
     }
 
     public function getInputFilterSpecification()
     {
         return array(
-            'merge_id' => array(
+            'stockmergement_id' => array(
                 'required' => true,
             ),
             'description' => array(
@@ -122,7 +122,7 @@ class IngredientFieldset extends Fieldset implements InputFilterProviderInterfac
             'quantity' => array(
                 'required' => false,
             ),
-            'unit_id' => array(
+            'measureunit_id' => array(
                 'required' => false,
             ),
             'sequence' => array(

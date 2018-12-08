@@ -39,7 +39,7 @@
                         <span class="icon-bar"></span>
                     </button>
                     <a class="navbar-brand" href="<?php echo $this->url('login') ?>"><?php echo $this->translate('Nostradomus') ?></a>
-                    <a class="navbar-brand" href="<?php echo $this->url('stock') ?>"><?php echo $this->translate('Inventory') ?></a>
+                    <a class="navbar-brand" href="<?php echo $this->url('inventory') ?>"><?php echo $this->translate('Inventory') ?></a>
                     <a class="navbar-brand" href="<?php echo $this->url('stockmerge') ?>"><?php echo $this->translate('Stock') ?></a>
                  <!--   <a class="navbar-brand" href="<?php //echo $this->url('management') ?>"><?php //echo $this->translate('Management') ?></a>-->
                     <a class="navbar-brand" href="<?php echo $this->url('stockinterface') ?>"><?php echo $this->translate('In/Out') ?></a>
@@ -63,7 +63,7 @@
         <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
             <div class="container">
                 <footer>
-                    <a class="login-bar-default-bottom">Copyright &copy; <?php echo date('Y').' ' . $this->VERSION; ?> Florence Colas - Warehouse Portal. All rights reserved.</a>
+                    <a class="login-bar-default-bottom">Copyright &copy; <?= date('Y').' - v.' . $this->version . ' - ' . $this->author; ?> - Nostradomus Portal. All rights reserved.</a>
                 </footer>
             </div>
         </nav>

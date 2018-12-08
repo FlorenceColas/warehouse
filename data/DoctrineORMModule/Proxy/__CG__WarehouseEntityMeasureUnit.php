@@ -64,10 +64,10 @@ class MeasureUnit extends \Warehouse\Entity\MeasureUnit implements \Doctrine\ORM
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', 'id', 'description', 'unit', 'comparaison', 'useinstock'];
+            return ['__isInitialized__', 'id', 'comparaison', 'description', 'useinstock', 'unit'];
         }
 
-        return ['__isInitialized__', 'id', 'description', 'unit', 'comparaison', 'useinstock'];
+        return ['__isInitialized__', 'id', 'comparaison', 'description', 'useinstock', 'unit'];
     }
 
     /**

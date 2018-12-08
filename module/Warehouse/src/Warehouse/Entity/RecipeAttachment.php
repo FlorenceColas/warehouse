@@ -1,215 +1,59 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 10/11/16
- * Version: 1.00
- * RecipeAttachment: Entity corresponding to recipeattachment table
- * Properties:
- *      - id
- *      - description
- *      - filename
- *      - path
- *      - mime
- *      - size
- *      - defaultphoto
- *      - creationdate
- *      - recipe (recipe_id)
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Warehouse\Repository\RecipeAttachmentRepository")
- * @ORM\Table(name="recipeattachment")
+ * @ORM\Table(name="recipes_attachment")
  */
 class RecipeAttachment
 {
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    protected $description;
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    protected $filename;
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    protected $path;
-    /**
-     * @ORM\Column(type="string", length=45)
-     */
-    protected $mime;
-    /**
-     * @ORM\Column(type="integer")
-     */
-    protected $size;
-    /**
-     * @ORM\Column(type="string", length=1)
-     */
-    protected $defaultphoto;
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    protected $creationdate;
-    /**
      * @ORM\ManyToOne(targetEntity="Recipe", inversedBy="recipeattachments")
-     * @ORM\JoinColumn(name="recipe_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="recipes_id", referencedColumnName="id", nullable=true)
      */
-    private $recipe;
+    private $recipes_id;
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\ManyToOne(targetEntity="Recipe", inversedBy="recipeattachments")
+     * @ORM\JoinColumn(name="attachement_id", referencedColumnName="id", nullable=true)
+     */
+    private $attachment_id;
 
     /**
-     * @return $id
+     * @return $recipes_id
      */
-    public function getId()
+    public function getRecipesId()
     {
-        return $this->id;
+        return $this->recipes_id;
     }
 
     /**
-     * @param integer $id
+     * @param integer $recipes_id
      */
-    public function setId($id)
+    public function setRecipeId($recipes_id)
     {
-        $this->id = $id;
+        $this->recipes_id = $recipes_id;
     }
 
     /**
-     * @return $description
+     * @return $attachment_id
      */
-    public function getDescription()
+    public function getAttachmentId()
     {
-        return $this->description;
+        return $this->attachment_id;
     }
 
     /**
-     * @param string $description
+     * @param integer $attachment_id
      */
-    public function setDescription($description)
+    public function setAttachmentId($attachment_id)
     {
-        $this->description = $description;
+        $this->attachment_id = $attachment_id;
     }
 
-    /**
-     * @return string
-     */
-    public function getFileName()
-    {
-        return $this->filename;
-    }
-
-    /**
-     * @param string filename
-     */
-    public function setFileName($fileName)
-    {
-        $this->filename = $fileName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
-     * @param string path
-     */
-    public function setPath($path)
-    {
-        $this->path = $path;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMime()
-    {
-        return $this->mime;
-    }
-
-    /**
-     * @param string mime
-     */
-    public function setMime($mime)
-    {
-        $this->mime = $mime;
-    }
-
-    /**
-     * @return $size
-     */
-    public function getSize()
-    {
-        return $this->size;
-    }
-
-    /**
-     * @param integer $size
-     */
-    public function setSize($size)
-    {
-        $this->size = $size;
-    }
-
-    /**
-     * @return $defaultphoto
-     */
-    public function getDefaultPhoto()
-    {
-        return $this->defaultphoto;
-    }
-
-    /**
-     * @param string $defaultphoto
-     */
-    public function setDefaultPhoto($defaultphoto)
-    {
-        $this->defaultphoto = $defaultphoto;
-    }
-
-    /**
-     * @return datetime
-     */
-    public function getCreationDate()
-    {
-        return $this->creationdate;
-    }
-
-    /**
-     * @param datatetime creationdate
-     */
-    public function setCreationDate($creationdate)
-    {
-        $this->creationdate = $creationdate;
-    }
-
-    /**
-     * @return Recipe
-     */
-    public function getRecipe()
-    {
-        return $this->recipe;
-    }
-
-    /**
-     * @param Recipe $recipe
-     */
-    public function setRecipe($recipe)
-    {
-        $this->recipe = $recipe;
-    }
 }

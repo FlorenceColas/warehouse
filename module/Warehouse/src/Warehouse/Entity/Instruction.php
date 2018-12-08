@@ -1,19 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 28/03/16
- * Version: 1.00
- * Instruction: Entity corresponding to instructions table
- * Properties:
- *      - id
- *      - description
- *      - sequence
- *      - recipe (recipe_id)
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -31,6 +16,11 @@ class Instruction
      */
     protected $id;
     /**
+     * @ORM\ManyToOne(targetEntity="Recipe", inversedBy="instructions")
+     * @ORM\JoinColumn(name="recipes_id", referencedColumnName="id", nullable=false)
+     */
+    private $recipe;
+    /**
      * @ORM\Column(type="string")
      */
     protected $description;
@@ -38,11 +28,6 @@ class Instruction
 	 * @ORM\Column(type="integer")
 	 */
 	protected $sequence;
-	/**
-     * @ORM\ManyToOne(targetEntity="Recipe", inversedBy="instructions")
-     * @ORM\JoinColumn(name="recipe_id", referencedColumnName="id", nullable=false)
-     */
-    private $recipe;
 
 	/**
      * @return integer

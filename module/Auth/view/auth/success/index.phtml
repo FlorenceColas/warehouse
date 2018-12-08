@@ -1,0 +1,49 @@
+<br>
+<?php if ($this->access == \Auth\SuccessController::UER_ACCESS_VISITOR) { ?>
+    <h1>Welcome <?php echo $this->name; ?></h1>
+
+    <p>This portal is made with <b>PHP7</b> and uses <b>Zend Framework 2</b>. </p>
+    <p>I have realised this project
+        to improve my skills about this technology. By this way I can give you an overview of my work.</p>
+    <p>This portal uses:</p>
+    <ul>
+        <li><b>Zend\Authentication</b> for authentication and session storage</li>
+        <li><b>Doctrine</b> for data persistence and <b>Doctrine\ORM</b> annotations for database schema generation</li>
+        <li><b>Zend\Mail</b> and <b>Zend\ServiceManager</b> for mail service</li>
+        <li>Form filters and validators using different methods: <b>@Annotation</b> or <b>Zend\Form</b> & <b>Zend\InputFilter</b></li>
+    </ul>
+<?php } elseif ($this->access == \Auth\SuccessController::UER_ACCESS_USER) { ?>
+    <h1>Welcome <?php echo $this->name; ?></h1>
+    <p>Enjoy your time on the portal !</p>
+    <br>
+
+    <a href="<?= $this->url('change_password', ['controller' => \Auth\SuccessController::class, 'action' => 'changepassword', 'id' => $this->id]); ?>">
+        Change my password
+    </a>
+    <br>
+    <?php
+    if (isset($this->flashmessages)) {
+        echo '</span>';
+        echo '<span class="custom_form_info">';
+        foreach($this->flashmessages as $message) {
+            echo $message;
+        }
+    }
+?>
+<?php } elseif ($this->access == \Auth\SuccessController::UER_ACCESS_ADMIN) { ?>
+
+    <h1>Hi Boss !</h1>
+    <a href="<?= $this->url('change_password', ['controller' => \Auth\SuccessController::class, 'action' => 'changepassword', 'id' => $this->id]); ?>">
+        Change my password
+    </a>
+    <br>
+<?php
+
+    if (isset($this->flashmessages)) {
+        echo '</span>';
+        echo '<span class="custom_form_info">';
+        foreach($this->flashmessages as $message) {
+            echo $message;
+        }
+    }
+} ?>

@@ -15,13 +15,43 @@
 namespace Warehouse\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Warehouse\Enum\EnumAvailability;
-use Warehouse\Enum\EnumStatus;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Zend\Session\Container;
 
 class StockMergementRepository extends EntityRepository
 {
+    public function getStockByCriterias(array $criterias = null)
+    {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+
+        $qb->select('A.id, A.description, A.netquantity, B.unit')
+            ->from('\Warehouse\Entity\StockMergement', 'A')
+            ->leftJoin('\Warehouse\Entity\MeasureUnit', 'B', \Doctrine\ORM\Query\Expr\Join::WITH, 'B.id = A.measureunit');
+
+        if (null != $criterias) {
+            if (isset($criterias['description'])) {
+                $qb->andWhere($qb->expr()->like('A.description', $qb->expr()->literal('%' . $criterias['description'] . '%')));
+            }
+            if (isset($criterias['area'])) {
+                $qb->andWhere('A.area = ?1')
+                    ->setParameter(1, $criterias['area']);
+            }
+            if (isset($criterias['status'])) {
+                $qb->andWhere('A.status = ?2')
+                    ->setParameter(2, $criterias['status']);
+            }
+            if (isset($criterias['sections']) and count($criterias['sections']) > 0) {
+                $qb->andWhere($qb->expr()->in('A.section', $criterias['sections']));
+            }
+        }
+
+        $qb->orderBy('A.description', 'ASC');
+        $query = $qb->getQuery()->getArrayResult();
+
+        return $query;
+    }
+
     /**
      * Stock list pagination
      * @param int $offset
@@ -73,10 +103,10 @@ class StockMergementRepository extends EntityRepository
             $availability = $criteriaStock->getAvailability();
         if (isset($availability)) {
             switch ($availability) {
-                case EnumAvailability::OnStock:
+                case \Warehouse\Controller\StockmergementController::ON_STOCK:
                     $where = $where . ' and s.netquantity > 0';
                     break;
-                case EnumAvailability::NotOnStock:
+                case \Warehouse\Controller\StockmergementController::NOT_ON_STOCK:
                     $where = $where . ' and s.netquantity = 0';
                     break;
             }

@@ -1,21 +1,20 @@
 <?php
 namespace Warehouse;
 
-/**
- * Created by PhpStorm.
- * User: FlorenceColas
- * Date: 02/02/16
- * Time: 14:10
- */
-
 return [
     'doctrine' => [
+        'configuration' => [
+            'orm_default' => [
+                'datetime_functions' => [
+                   'DATE_FORMAT'  => 'Warehouse\Tools\DQL\DateFormatFunction',
+                ],
+            ],
+        ],
         'driver' => [
             __NAMESPACE__.'Driver' => [
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
                 'cache' => 'array',
                 'paths' => [
-                    //'../src/'.__NAMESPACE__.'/Entity',
                     'module/'.__NAMESPACE__.'/src/'.__NAMESPACE__.'/Entity',
                 ],
             ],
@@ -26,22 +25,5 @@ return [
             ],
         ],
     ],
-
-/*    'doctrine' => array(
-        'driver' => array(
-            'app_driver' => array(
-                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-                'cache' => 'array',
-                'paths' => array(
-                    __DIR__ . '/../src/Application/Entity'
-                )
-            ),
-            'orm_default' => array(
-                'drivers' => array(
-                    'Application\Entity' => 'app_driver'
-                )
-            )
-        ),
-    )
-  */
 ];
+

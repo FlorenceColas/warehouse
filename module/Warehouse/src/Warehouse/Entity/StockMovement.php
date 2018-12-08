@@ -1,19 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 10/01/2017
- * Version: 1.00
- * StockMovement: Entity corresponding to stock movement table
- * Properties:
- *      - id
- *      - stock (stock_id)
- *      - quantity
- *      - movement
- *      - date
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- */
-
 namespace Warehouse\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -30,22 +15,22 @@ use Doctrine\ORM\Mapping as ORM;
      */
     protected $id;
     /**
-     * @ORM\Column(type="decimal", precision=3, scale=1, nullable=false)
+     * @ORM\ManyToOne(targetEntity="Stock", inversedBy="stockmovement")
+     * @ORM\JoinColumn(name="stock_id", referencedColumnName="id", nullable=false)
      */
-    protected $quantity;
-    /**
-     * @ORM\Column(type="integer", nullable = false)
-     */
-    protected $movement;
+    private $stock;
     /**
      * @ORM\Column(type="date", nullable = false)
      */
     protected $datemovement;
     /**
-     * @ORM\ManyToOne(targetEntity="Stock", inversedBy="stockmovement")
-     * @ORM\JoinColumn(name="stock_id", referencedColumnName="id", nullable=false)
+     * @ORM\Column(type="integer", nullable = false)
      */
-    private $stock;
+    protected $movement;
+    /**
+     * @ORM\Column(type="decimal", precision=3, scale=1, nullable=false)
+     */
+    protected $quantity;
 
     /**
      * @return mixed
