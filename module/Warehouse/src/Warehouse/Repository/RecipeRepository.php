@@ -3,7 +3,6 @@ namespace Warehouse\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Warehouse\Entity\Recipe;
-use Zend\Db\Sql\Expression;
 
 class RecipeRepository extends EntityRepository
 {
@@ -19,7 +18,11 @@ class RecipeRepository extends EntityRepository
         $qb->select('A.id, A.description, A.serves, DATE_FORMAT(A.preparationTime, \'%H:%i\') as preparationTime, DATE_FORMAT(A.totalTime, \'%H:%i\') as totalTime, C.filename')
             ->from('\Warehouse\Entity\Recipe', 'A')
             ->leftJoin('\Warehouse\Entity\RecipeAttachment', 'B', \Doctrine\ORM\Query\Expr\Join::WITH, 'B.recipes_id = A.id')
-            ->leftJoin('\Warehouse\Entity\Attachment'      , 'C', \Doctrine\ORM\Query\Expr\Join::WITH, 'C.id = B.attachment_id and C.defaultphoto=1');
+            ->leftJoin('\Warehouse\Entity\Attachment'      , 'C', \Doctrine\ORM\Query\Expr\Join::WITH, 'C.id = B.attachment_id')
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->eq('C.defaultphoto', 1),
+                $qb->expr()->isNull('C.defaultphoto')
+            ));
 
         if (null != $criterias) {
             $qb->andWhere($qb->expr()->like('A.description', $qb->expr()->literal('%' . $criterias['description'] . '%')));

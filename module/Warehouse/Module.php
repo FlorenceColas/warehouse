@@ -30,7 +30,7 @@ class Module
         $authConfig = include __DIR__ . '/../Auth/config/ConfigProvider.php';
         $config     = ArrayUtils::merge($config, $authConfig);
 
-        $auditTrailConfig = include __DIR__ . '/../AuditTrail/config/ConfigProvider.local.php';
+        $auditTrailConfig = include __DIR__ . '/../AuditTrail/config/ConfigProvider.php';
         $config     = ArrayUtils::merge($config, $auditTrailConfig);
 
         $commonConfig = include __DIR__ . '/../Common/config/ConfigProvider.php';
