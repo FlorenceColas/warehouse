@@ -10,7 +10,6 @@ nbproject
 .settings
 bootstrap.php
 composer.phar
-module/Warehouse/config/*
 public/fonts/*
 public/img/*
 public/inventory/*
