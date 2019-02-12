@@ -3,6 +3,7 @@
 namespace Warehouse\Controller;
 
 use Warehouse\Entity\Attachment;
+use Zend\File\Exception\BadMethodCallException;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 
@@ -52,7 +53,6 @@ class AttachmentController extends AbstractActionController
                     'result'  => 'error',
                     'message' => 'The image has been uploaded. Maximum size ' . $this->config['upload_max_size'] . '.',
                 ];
-                exit();
             }
             if (self::RECIPE_ATTACHMENT === $documentType) {
                 $path = $this->config['path']['recipe_image_upload'];
@@ -63,9 +63,8 @@ class AttachmentController extends AbstractActionController
             if (!$image_saved) {
                 return [
                     'result'  => 'error',
-                    'message' => 'The image has been uploaded. Contact the administrator.',
+                    'message' => 'The image has not been uploaded. Contact the administrator.',
                 ];
-                exit();
             }
             rename($path . '/' . $file['name'],  $path . '/' . $parentId . '_' . $file['name']);
 

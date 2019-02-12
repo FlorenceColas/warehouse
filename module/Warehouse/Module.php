@@ -23,20 +23,20 @@ class Module
 
     public function getConfig()
     {
-        $config        = include __DIR__ . '/config/module.config.php';
-        $sessionConfig = include __DIR__ . '/config/session.config.php';
+        $config        = include APPLICATION_PATH . '/config/module.config.php';
+        $sessionConfig = include APPLICATION_PATH . '/config/session.config.php';
         $config        = ArrayUtils::merge($config, $sessionConfig);
 
-        $authConfig = include __DIR__ . '/../Auth/config/ConfigProvider.php';
+        $authConfig = include APPLICATION_PATH . '/../Auth/config/ConfigProvider.php';
         $config     = ArrayUtils::merge($config, $authConfig);
 
-        $auditTrailConfig = include __DIR__ . '/../AuditTrail/config/ConfigProvider.php';
+        $auditTrailConfig = include APPLICATION_PATH . '/../AuditTrail/config/ConfigProvider.php';
         $config     = ArrayUtils::merge($config, $auditTrailConfig);
 
-        $commonConfig = include __DIR__ . '/../Common/config/ConfigProvider.php';
+        $commonConfig = include APPLICATION_PATH . '/../Common/config/ConfigProvider.php';
         $config       = ArrayUtils::merge($config, $commonConfig);
 
-        $auditTrailConfig = include __DIR__ . '/../AuditTrail/config/ConfigProvider.php';
+        $auditTrailConfig = include APPLICATION_PATH . '/../AuditTrail/config/ConfigProvider.php';
         return ArrayUtils::merge($config, $auditTrailConfig);
     }
 
@@ -45,7 +45,7 @@ class Module
         return array(
             'Zend\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
+                    __NAMESPACE__ => APPLICATION_PATH . '/src/' . __NAMESPACE__,
                 ),
             ),
         );
