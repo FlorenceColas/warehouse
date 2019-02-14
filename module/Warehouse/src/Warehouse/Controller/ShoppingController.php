@@ -312,10 +312,10 @@ class ShoppingController extends AbstractActionController
 
         $message = new Message();
 
-        $message->setFrom($this->config['from']);
+        $message->setFrom($this->config['mail']['from']);
 
         if ('' === 'colasflorence@laposte.net') {
-            $message->addTo($this->config['to']);
+            $message->addTo($this->config['mail']['to']);
         } else {
             $message->addTo('colasflorence@laposte.net');
         }
