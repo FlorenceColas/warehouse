@@ -1,16 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 05/12/16
- * Version: 1.00
- * AppsettingsRepository: Repository for appsettings table. It contains the following functions:
- *      - findByReference: return the value of the reference in parameter
- *      - getPagedSettings: for pagination
- *      - findBySettingId: return the setting corresponding to the setting id in parameter
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
 
 namespace Warehouse\Repository;
 
@@ -26,43 +14,25 @@ class AppsettingsRepository extends EntityRepository
      */
     public function findByReference($reference) {
         $result = $this->findBy(array('settingreference' => $reference));
+
         return $result;
-
-/*        $em = $this->getEntityManager();
-        $qb = $em->createQueryBuilder();
-        $qb->select('a')
-            ->from('\Warehouse\Entity\Appsettings', 'a')
-            ->where('a.settingreference=\''.$reference.'\'');
-        $query = $qb->getQuery()->getResult();
-
-        return $query;
-*/
     }
 
     /**
-     * Settings pagination
-     * @param int $offset
-     * @param int $limit
-     * @param string $table
-     * @return Paginator
+     * Settings
+     * @return Settings
      */
-    public function getPagedSettings($offset = 0, $limit = 8, $table)
+    public function getFindSettings()
     {
-        $entity = '\Warehouse\Entity\Appsettings';
-
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
 
         $qb->select('a')
-            ->from($entity, 'a')
-            ->orderBy('a.settingreference')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
-        $query = $qb->getQuery();
+            ->from('\Warehouse\Entity\Appsettings', 'a')
+            ->orderBy('a.settingreference');
+        $query = $qb->getQuery()->getArrayResult();
 
-        $paginator = new Paginator($query);
-
-        return $paginator;
+        return $query;
     }
 
     /**
@@ -77,6 +47,7 @@ class AppsettingsRepository extends EntityRepository
             ->from('\Warehouse\Entity\Appsettings', 'a')
             ->where('a.id='.$id);
         $query = $qb->getQuery()->getResult();
+
         return $query;
     }
 

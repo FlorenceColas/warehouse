@@ -3,7 +3,6 @@
 namespace Warehouse\Controller;
 
 use Warehouse\Entity\Attachment;
-use Zend\File\Exception\BadMethodCallException;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 

@@ -371,7 +371,7 @@ class ShoppingController extends AbstractActionController
             }
 
             $unit = $this->doctrine->getRepository('Warehouse\Entity\MeasureUnit')->findBySettingId(EnumUnit::UNIT_PIECE, EnumTableSettings::MEASUREUNIT);
-            $stockInterface->setUnittointegrate($unit[0]);
+            $stockInterface->setUnittointegrate($unit[0]->getId());
 
             if ($sp->getMeasureUnit()->getId() == EnumUnit::UNIT_PIECE) {
                 $stockInterface->setQuantitytointegrate($sp->getQuantity());

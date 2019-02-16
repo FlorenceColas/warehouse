@@ -1,18 +1,4 @@
 <?php
-/**
- * User: FlorenceColas
- * Date: 29/02/16
- * Version: 1.00
- * SettingsRepository: Repository for setting tables. It contains the following functions:
- *      - findAllOrderByDescription: return all the settings (for the table in parameter) order by description
- *      - findByAreaOrderDescription: return the settings with area equals to the value in parameter
- *      - findBySettingId: return the setting corresponding to the setting id in parameter
- *      - findAvailableStockUnit: return the measure unit available in stock form
- *      - getPagedSettings: settings pagination
- *------------------------------------------------------------------------------------------------------------------
- * Updates:
- *
- */
 
 namespace Warehouse\Repository;
 
@@ -41,6 +27,7 @@ class SettingsRepository extends EntityRepository
                 ->orderBy('s.description');
         }
         $query = $qb->getQuery()->getResult();
+
         return $query;
     }
 
@@ -57,6 +44,7 @@ class SettingsRepository extends EntityRepository
                 ->where('s.area='.$area)
                 ->orderBy('s.description');
         $query = $qb->getQuery()->getResult();
+
         return $query;
     }
 
@@ -72,6 +60,7 @@ class SettingsRepository extends EntityRepository
             ->from('\Warehouse\Entity\\' . $table, 's')
             ->where('s.id='.$id);
         $query = $qb->getQuery()->getResult();
+
         return $query;
     }
 
@@ -86,17 +75,16 @@ class SettingsRepository extends EntityRepository
             ->from('\Warehouse\Entity\MeasureUnit', 'm')
             ->where('m.useinstock=1');
         $query = $qb->getQuery()->getResult();
+
         return $query;
     }
 
     /**
-     * Settings pagination
-     * @param int $offset
-     * @param int $limit
+     * Settings
      * @param string $table
-     * @return Paginator
+     * @return Settings
      */
-    public function getPagedSettings($offset = 0, $limit = 8, $table)
+    public function getFindSettings($table)
     {
         $entity = '\Warehouse\Entity\\'.$table;
 
@@ -105,13 +93,9 @@ class SettingsRepository extends EntityRepository
 
         $qb->select('s')
             ->from($entity, 's')
-            ->orderBy('s.description')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
-        $query = $qb->getQuery();
+            ->orderBy('s.description');
+        $query = $qb->getQuery()->getArrayResult();
 
-        $paginator = new Paginator($query);
-
-        return $paginator;
+        return $query;
     }
 }

@@ -1,71 +1,53 @@
 <?php
 namespace Application;
 
+use Warehouse\Controller\ManagementController;
+use Warehouse\Controller\ToolsController;
+use Warehouse\Factory\AttachmentControllerFactory;
+use Warehouse\Factory\InventoryattachmentControllerFactory;
+use Warehouse\Factory\InventoryControllerFactory;
+use Warehouse\Factory\RecipeattachmentControllerFactory;
+use Warehouse\Factory\RecipeControllerFactory;
+use Warehouse\Factory\SettingsControllerFactory;
+use Warehouse\Factory\ShoppingControllerFactory;
+use Warehouse\Factory\StockInterfaceControllerFactory;
+use Warehouse\Factory\StockMergementControllerFactory;
+use Warehouse\Form\Element\BarCode;
+use Warehouse\Form\StockForm;
+use Warehouse\View\Helper\FieldCollection;
+use Warehouse\View\Helper\FieldRow;
 use Zend\Db\Adapter as DbAdapter;
 use Zend\Expressive\Plates\PlatesRendererFactory;
 use Zend\Expressive\Template\TemplateRendererInterface;
+use Zend\I18n\Translator\TranslatorServiceFactory;
 
 return [
     'AuditTrail',
     'Auth',
     'Common',
 
-    'console' => [
-        'router' => [
-            'routes' => [
-            ],
-        ],
-    ],
-
     'controllers' => [
         'invokables' => [
-//            'Rest\Service'                        => 'Rest\ServiceController',
-            'Warehouse\Controller\Management'     => 'Warehouse\Controller\ManagementController',
-            'Warehouse\Controller\Settings'       => 'Warehouse\Controller\SettingsController',
-            'Warehouse\Controller\Tools'          => 'Warehouse\Controller\ToolsController',
+            'Warehouse\Controller\Management' => ManagementController::class,
+            'Warehouse\Controller\Tools'      => ToolsController::class,
         ],
         'factories' => [
-            'Warehouse\Controller\Attachment'          => 'Warehouse\Factory\AttachmentControllerFactory',
-            'Warehouse\Controller\Inventory'           => 'Warehouse\Factory\InventoryControllerFactory',
-            'Warehouse\Controller\Inventoryattachment' => 'Warehouse\Factory\InventoryattachmentControllerFactory',
-            'Warehouse\Controller\Recipe'              => 'Warehouse\Factory\RecipeControllerFactory',
-            'Warehouse\Controller\Recipeattachment'    => 'Warehouse\Factory\RecipeattachmentControllerFactory',
-            'Warehouse\Controller\Shopping'            => 'Warehouse\Factory\ShoppingControllerFactory',
-            'Warehouse\Controller\Stockinterface'      => 'Warehouse\Factory\StockinterfaceControllerFactory',
-            'Warehouse\Controller\Stockmergement'      => 'Warehouse\Factory\StockMergementControllerFactory',
-        ]
-
+            'Warehouse\Controller\Attachment'          => AttachmentControllerFactory::class,
+            'Warehouse\Controller\Inventory'           => InventoryControllerFactory::class,
+            'Warehouse\Controller\Inventoryattachment' => InventoryattachmentControllerFactory::class,
+            'Warehouse\Controller\Recipe'              => RecipeControllerFactory::class,
+            'Warehouse\Controller\Recipeattachment'    => RecipeattachmentControllerFactory::class,
+            'Warehouse\Controller\Settings'            => SettingsControllerFactory::class,
+            'Warehouse\Controller\Shopping'            => ShoppingControllerFactory::class,
+            'Warehouse\Controller\Stockinterface'      => StockInterfaceControllerFactory::class,
+            'Warehouse\Controller\Stockmergement'      => StockMergementControllerFactory::class,
+        ],
     ],
 
     'form_elements' => [
         'invokables' => [
-            'stockform' => 'Warehouse\Form\StockForm',
-            'barcode' => 'Warehouse\Form\Element\Barcode',
-        ],
-    ],
-
-    'templates'       => [
-        'extension' => 'phtml',
-        'paths'     => [
-            'recipe' => [__DIR__ . '/../templates/recipe'],
-        ],
-    ],
-
-    'service_manager' => [
-        'abstract_factories' => [
-            'Zend\Cache\Service\StorageCacheAbstractServiceFactory',
-//            'Zend\Log\LoggerAbstractServiceFactory',
-        ],
-        'invokables' =>  [
-        ],
-        'factories' => [
-            'navigation'                    => 'Zend\Navigation\Service\DefaultNavigationFactory',
-            'translator'                    => 'Zend\Mvc\Service\TranslatorServiceFactory',
-//            'Zend\Db\Adapter\Adapter'       => 'Zend\Db\Adapter\AdapterServiceFactory',
-            TemplateRendererInterface::class => PlatesRendererFactory::class,
-        ],
-        'shared' => [
-
+            'stockform' => StockForm::class,
+            'barcode'   => BarCode::class,
         ],
     ],
 
@@ -175,21 +157,26 @@ return [
                             ],
                         ],
                     ],
-                    'paginator' => [
-                        'type' => 'Segment',
-                        'options' => [
-                            'route' => '/[:controller[/:action[/page/:page]]]',
-                            'constraints' => [
-                                'page'     => '[1-9][0-9]*',
-                            ],
-                            'defaults' => [
-                                'page'      => 1,
-                            ]
-                        ],
-                        'may_terminate' => true,
-                    ],
                 ],
             ],
+        ],
+    ],
+
+    'service_manager' => [
+        'abstract_factories' => [
+            'Zend\Cache\Service\StorageCacheAbstractServiceFactory',
+        ],
+        'factories' => [
+            //       'navigation'                    => 'Zend\Navigation\Service\DefaultNavigationFactory',
+            'translator'                    => TranslatorServiceFactory::class,
+            TemplateRendererInterface::class => PlatesRendererFactory::class,
+        ],
+    ],
+
+    'templates'       => [
+        'extension' => 'phtml',
+        'paths'     => [
+            'recipe' => [__DIR__ . '/../templates/recipe'],
         ],
     ],
 
@@ -206,9 +193,8 @@ return [
 
     'view_helpers' => [
         'invokables'=> [
-//            'PaginationHelper' => 'Warehouse\View\Helper\PaginationHelper',
-            'fieldCollection' => 'Warehouse\View\Helper\FieldCollection',
-            'fieldRow' => 'Warehouse\View\Helper\FieldRow'
+            'fieldCollection' => FieldCollection::class,
+            'fieldRow'        => FieldRow::class,
         ]
     ],
 

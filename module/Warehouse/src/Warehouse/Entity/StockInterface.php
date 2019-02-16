@@ -46,6 +46,10 @@ class StockInterface
      * @ORM\Column(type="integer", nullable = false)
      */
     protected $sens;
+    /**
+     * @ORM\Column(type="integer", nullable = false)
+     */
+    protected $unittointegrate_id;
 
     /**
      * @return mixed
@@ -180,7 +184,7 @@ class StockInterface
      */
     public function getUnittointegrate()
     {
-        return $this->unittointegrate;
+        return $this->unittointegrate_id;
     }
 
     /**
@@ -188,7 +192,7 @@ class StockInterface
      */
     public function setUnittointegrate($unittointegrate)
     {
-        $this->unittointegrate = $unittointegrate;
+        $this->unittointegrate_id = $unittointegrate;
     }
 
 
