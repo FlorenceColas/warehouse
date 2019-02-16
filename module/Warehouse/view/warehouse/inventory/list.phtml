@@ -35,9 +35,8 @@
     <form method="get" action="/warehouse/inventory/add">
         <input type="submit" value="New"/>
     </form>
-    <form method="get" action="/warehouse/inventory/exportxls">
-        <input type="submit" value="Export XLS">
-    </form>
+    <input name="exportxls" type="button" onclick="exportxls();" id="exportxls" value="Export XLS">
+    <div name="file" id="file"></div>
     <table class="table table-striped">
         <thead>
         <tr>
@@ -256,4 +255,19 @@
     }
     }
     )
+
+    function OpenRLink(l){
+        window.open(l);
+    }
+
+    function exportxls(){
+        event.preventDefault();
+        $.ajax({
+            url: "/warehouse/inventory/exportxls",
+            type: "POST",
+            success: function(data){
+                $("#file").html(data.file);
+            }
+        });
+    }
 </script>

@@ -4,6 +4,7 @@ return [
 
     'path' => [
         'application_path'           => APPLICATION_PATH,
+        'inventory_xls'              => APPLICATION_PATH . '/public/inventory/xls',
         'recipe_image_upload'        => APPLICATION_PATH . '/public/upload/recipe',
         'recipe_public_thumb_upload' => APPLICATION_PATH . '/public/upload/recipe/thumb',
         'recipe_public_pdf'          => APPLICATION_PATH . '/public/recipes',
@@ -19,6 +20,7 @@ return [
     'upload_max_size' => '4 MB',
 
     'url' => [
+        'inventory_xls'      => '/inventory/xls',
         'shopping_list_html' => '/shoppinglist/html',
         'shopping_list_pdf'  => '/shoppinglist/pdf',
         'shopping_list_xls'  => '/shoppinglist/xls',

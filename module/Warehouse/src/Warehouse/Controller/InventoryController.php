@@ -486,10 +486,25 @@ class InventoryController extends AbstractActionController
      */
     public function exportxlsAction()
     {
-        $fp = fopen($_SERVER["DOCUMENT_ROOT"] . '/inventory/Inventory.xls', 'w');
+        $fileName = $this->CreateXLSInventoryList();
 
-        $stock = $this->doctrine->getRepository('Warehouse\Entity\Stock')->findAllOrderByDescription();
-        $list = array();
+        $file = '<a href="#" onclick="OpenRLink(\'' . $this->config['url']['inventory_xls'] . '/' . $fileName . '\');">' . $fileName . '</a>';
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaders(array('Content-Type' => 'application/json;charset=UTF-8'));
+        $response->setContent(\Zend\Json\Json::encode(array("result" => "success", "msg" => '', "file" => $file)));
+        return $response;
+    }
+
+    protected function CreateXLSInventoryList(): string
+    {
+        $now      = date('Y-m-d');
+        $path     = $this->config['path']['inventory_xls'] . '/';
+        $fileName = 'Inventory_' . $now . '.xls';
+
+        $fp = fopen($path . '/' . $fileName, 'w');
+
+        $inventory = $this->doctrine->getRepository('Warehouse\Entity\Stock')->findAllOrderByDescription();
+        $list = [];
         array_push($list,[
             'Id',
             'Barcode',
@@ -497,10 +512,9 @@ class InventoryController extends AbstractActionController
             'Quantity',
             'status',
         ]);
-
-        foreach ($stock as $sl) {
+        foreach ($inventory as $inv) {
             $status = '';
-            switch ($sl->getStatus() == $this::ENABLED) {
+            switch ($inv->getStatus() == $this::ENABLED) {
                 case $this::ENABLED:
                     $status = 'Enabled';
                     break;
@@ -512,12 +526,13 @@ class InventoryController extends AbstractActionController
                     break;
             }
             array_push($list,[
-                $sl->getId(),
-                $sl->getBarcode(),
-                $sl->getDescription(),
-                $sl->getQuantity(),
+                $inv->getId(),
+                $inv->getBarcode(),
+                $inv->getDescription(),
+                $inv->getQuantity(),
                 $status,
             ]);
+
         };
 
         foreach ($list as $l) {
@@ -526,10 +541,6 @@ class InventoryController extends AbstractActionController
 
         fclose($fp);
 
-        $file = '<a href="#" onclick="OpenRLink(\'../../../../inventory/Inventory.xls\');">Inventory.xls</a>';
-        $response = $this->getResponse();
-        $response->getHeaders()->addHeaders(array('Content-Type' => 'application/json;charset=UTF-8'));
-        $response->setContent(\Zend\Json\Json::encode(array("result" => "success", "msg" => '', "file" => $file)));
-        return $response;
+        return $fileName;
     }
 }
