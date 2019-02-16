@@ -166,7 +166,7 @@ class StockFieldset extends Fieldset implements InputFilterProviderInterface
             'options'    => [
                 'label' => '',
             ],
-            'type'       => 'Zend\Form\Element\TextArea',
+            'type'       => 'Zend\Form\Element\Textarea',
         ]);
 
         $this->add([

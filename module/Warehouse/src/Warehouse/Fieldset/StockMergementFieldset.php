@@ -43,7 +43,7 @@ class StockMergementFieldset extends Fieldset implements InputFilterProviderInte
             'options'    => [
                 'label' => '',
             ],
-            'type'       => 'Zend\Form\Element\TextArea',
+            'type'       => 'Zend\Form\Element\Textarea',
         ]);
 
         $this->add([
