@@ -423,7 +423,7 @@ class InventoryController extends AbstractActionController
         $this->doctrine->persist($shoppingList);
         $this->doctrine->flush();
 
-        $this->redirect()->toRoute('warehouse/default', ['controller' => 'stock', 'action' => 'list']);
+        $this->redirect()->toRoute('warehouse/default', ['controller' => 'inventory', 'action' => 'list']);
         return $this->getResponse();
     }
 
@@ -491,7 +491,12 @@ class InventoryController extends AbstractActionController
         $file = '<a href="#" onclick="OpenRLink(\'' . $this->config['url']['inventory_xls'] . '/' . $fileName . '\');">' . $fileName . '</a>';
         $response = $this->getResponse();
         $response->getHeaders()->addHeaders(array('Content-Type' => 'application/json;charset=UTF-8'));
-        $response->setContent(\Zend\Json\Json::encode(array("result" => "success", "msg" => '', "file" => $file)));
+        $response->setContent(\Zend\Json\Json::encode([
+            'result' => 'success',
+            'msg'    => '',
+            'file'   => $file,
+        ]));
+
         return $response;
     }
 
@@ -499,39 +504,42 @@ class InventoryController extends AbstractActionController
     {
         $now      = date('Y-m-d');
         $path     = $this->config['path']['inventory_xls'] . '/';
-        $fileName = 'Inventory_' . $now . '.xls';
+        $fileName = "Inventory_$now.xls";
 
-        $fp = fopen($path . '/' . $fileName, 'w');
+        $fp = fopen("$path/$fileName", 'w');
 
         $inventory = $this->doctrine->getRepository('Warehouse\Entity\Stock')->findAllOrderByDescription();
-        $list = [];
-        array_push($list,[
+        $list[] = [
             'Id',
             'Barcode',
             'Description',
             'Quantity',
             'status',
-        ]);
+        ];
+
         foreach ($inventory as $inv) {
-            $status = '';
-            switch ($inv->getStatus() == $this::ENABLED) {
-                case $this::ENABLED:
+            switch ($inv->getStatus()) {
+                case InventoryController::ENABLED:
                     $status = 'Enabled';
                     break;
-                case $this::DISABLED:
+                case InventoryController::DISABLED:
                     $status = 'Disabled';
                     break;
-                case $this::BLOCKED:
+                case InventoryController::BLOCKED:
                     $status = 'Blocked';
                     break;
+                default:
+                    $status = '';
+                    break;
             }
-            array_push($list,[
+
+            $list[] = [
                 $inv->getId(),
                 $inv->getBarcode(),
                 $inv->getDescription(),
                 $inv->getQuantity(),
                 $status,
-            ]);
+            ];
 
         };
 
