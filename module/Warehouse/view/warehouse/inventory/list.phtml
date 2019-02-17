@@ -189,7 +189,6 @@
         },
         computed: {
             sortedSections(){
-//                return _.orderBy(this.sections, 'description', 'asc');
                 return this.sections.sort((a, b) => a['description'] < b['description']);
             }
         }

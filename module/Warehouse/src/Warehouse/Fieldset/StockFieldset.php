@@ -4,6 +4,7 @@ namespace Warehouse\Fieldset;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Warehouse\Entity\Stock;
+use Warehouse\Controller\InventoryController;
 use Zend\Form\Element;
 use Zend\Form\Fieldset;
 use Zend\Hydrator\ClassMethods as ClassMethodsHydrator;
@@ -145,12 +146,12 @@ class StockFieldset extends Fieldset implements InputFilterProviderInterface
             'name'    => 'status',
             'options' => [
                 'attributes'    => [
-                    'value' => \Warehouse\Controller\InventoryController::ENABLED,
+                    'value' => InventoryController::ENABLED,
                 ],
                 'label'         => '',
                 'value_options' => [
-                    \Warehouse\Controller\InventoryController::DISABLED => 'Disabled',
-                    \Warehouse\Controller\InventoryController::ENABLED  => 'Enabled',
+                    InventoryController::ENABLED  => 'Enabled',
+                    InventoryController::DISABLED => 'Disabled',
                 ],
             ],
             'type'    => 'Zend\Form\Element\Select',
@@ -217,7 +218,7 @@ class StockFieldset extends Fieldset implements InputFilterProviderInterface
                 'required' => true,
             ],
             'stockmergement_id' => [
-                'required' => false,
+                'required' => true,
             ],
             'netquantity' => [
                 'required' => true,

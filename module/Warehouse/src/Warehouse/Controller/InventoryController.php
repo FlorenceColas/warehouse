@@ -18,6 +18,9 @@ class InventoryController extends AbstractActionController
     const DISABLED = 0;
     const ENABLED  = 1;
     const BLOCKED  = 2;
+    const DISABLED_LABEL = 'Disabled';
+    const ENABLED_LABEL  = 'Enabled';
+    const BLOCKED_LABEL  = 'Blocked';
 
     protected $adapter;
     protected $config;
@@ -168,6 +171,8 @@ class InventoryController extends AbstractActionController
                 return $this->getResponse();
             }
             if (isset($data['delete']) == 1) {
+                $this->redirect()->toRoute('warehouse/default', ['controller' => 'inventory', 'action' => 'delete', 'id' => $id]);
+                return $this->getResponse();
             }
         }
 
@@ -378,9 +383,13 @@ class InventoryController extends AbstractActionController
      */
     public function barcodeAction(){
         $id = $this->params()->fromRoute('id', 0);
-        $barcodeOptions = array('text' => substr($id, 0, 12));
-        $rendererOptions = array();
-        return Barcode::factory('ean13', 'image', $barcodeOptions, $rendererOptions)->render();
+        Barcode::render(
+            'ean13',
+            'image',
+            ['text' => substr($id, 0, 12)],
+            []
+        );
+        return true;
     }
 
     /**
@@ -408,7 +417,6 @@ class InventoryController extends AbstractActionController
             $supplier = $this->doctrine->getRepository('Warehouse\Entity\Supplier')->findBySettingId($stockMergement->getSupplier()->getId(),'supplier');
             $shoppingList->setSupplier($supplier[0]);
             $shoppingList->setPriority(1);
-//            $shoppingList->setPriority(EnumPriority::PRIORITY_MAJOR);
             $unit = $this->doctrine->getRepository('Warehouse\Entity\MeasureUnit')->findBySettingId(1,'measureunit');
             $shoppingList->setStockmergement($stockMergement);
             $shoppingList->setMeasureUnit($unit[0]);
@@ -481,6 +489,23 @@ class InventoryController extends AbstractActionController
         return $options;
     }
 
+    public function deleteAction()
+    {
+        $id = $this->params()->fromRoute('id', 0);
+        $stockEntity = $this->doctrine->getRepository('Warehouse\Entity\Stock')->findByStockId($id);
+
+        if (0 == count($stockEntity)) {
+            return true;
+        }
+
+        $stock = $stockEntity[0];
+        $this->doctrine->remove($stock);
+        $this->doctrine->flush();
+
+        $this->redirect()->toRoute('warehouse/default', ['controller' => 'inventory', 'action' => 'list']);
+        return $this->getResponse();
+    }
+
     /**
      * Export the inventory list in an xls file
      */
@@ -520,13 +545,13 @@ class InventoryController extends AbstractActionController
         foreach ($inventory as $inv) {
             switch ($inv->getStatus()) {
                 case InventoryController::ENABLED:
-                    $status = 'Enabled';
+                    $status = InventoryController::ENABLED_LABEL;
                     break;
                 case InventoryController::DISABLED:
-                    $status = 'Disabled';
+                    $status = InventoryController::DISABLED_LABEL;
                     break;
                 case InventoryController::BLOCKED:
-                    $status = 'Blocked';
+                    $status = InventoryController::BLOCKED_LABEL;
                     break;
                 default:
                     $status = '';
