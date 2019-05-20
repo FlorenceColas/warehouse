@@ -33,7 +33,7 @@ The application implements:
 * Service manager (to send emails and for tracability)
 * PDF generator
 
-All the explanation about these implementations are written in the [Wiki](https://github.com/FlorenceColas/warehouse/wiki) part.
+More explanation about these implementations will come soon.
 
 ## Contributors
 
